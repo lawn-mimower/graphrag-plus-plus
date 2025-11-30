@@ -34,7 +34,8 @@ class MilvusIngestionEngine:
         db_path: str = "knowledge_graph.db",
         milvus_path: str = "./outputs/milvus_orchestrator.db",
         embedding_model: str = None,
-        collection_name: str = "orchestrator_entities"
+        collection_name: str = "orchestrator_entities",
+        auto_connect: bool = True
     ):
         """
         Initialize the Milvus ingestion engine.
@@ -44,6 +45,7 @@ class MilvusIngestionEngine:
             milvus_path: Path to Milvus-lite database file
             embedding_model: Sentence-transformers model name
             collection_name: Milvus collection name
+            auto_connect: If True, automatically connect to existing Milvus database
         """
         self.db_path = Path(db_path)
         self.milvus_path = milvus_path
@@ -57,6 +59,10 @@ class MilvusIngestionEngine:
 
         # Initialize Milvus client
         self.milvus_client = None
+
+        # Auto-connect to existing Milvus database if it exists
+        if auto_connect and Path(self.milvus_path).exists():
+            self._connect_to_milvus()
 
         logger.info(f"Ingestion engine initialized (dim={self.embedding_dim})")
 
@@ -168,6 +174,23 @@ class MilvusIngestionEngine:
 
         finally:
             conn.close()
+
+    def _connect_to_milvus(self):
+        """
+        Connect to existing Milvus database without re-creating collection.
+        """
+        logger.info(f"Connecting to existing Milvus database: {self.milvus_path}")
+
+        # Initialize client
+        self.milvus_client = MilvusClient(self.milvus_path)
+
+        # Check if collection exists
+        if self.milvus_client.has_collection(self.collection_name):
+            logger.info(f"Connected to existing collection: {self.collection_name}")
+        else:
+            logger.warning(f"Collection '{self.collection_name}' not found. Run ingest_from_sql() first.")
+            self.milvus_client.close()
+            self.milvus_client = None
 
     def _initialize_milvus_collection(self):
         """

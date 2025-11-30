@@ -585,7 +585,7 @@ if __name__ == "__main__":
     orchestrator = QueryOrchestrator()
 
     # Example query
-    test_query = "how are Director A and Director B related ?"
+    test_query = "who is director a to director b?"
     test_tags = ["UNCLASSIFIED"]
 
     print(f"\nQuery: {test_query}")

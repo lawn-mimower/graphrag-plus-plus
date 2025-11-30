@@ -30,6 +30,8 @@ class Config:
     # Light/comparison tasks
     MODEL_LIGHT = "gemini-2.5-flash-lite"
 
+    #Quickest Summariser
+    MODEL_FEATHER = "gemini-2.0-flash-lite"
     # Token limits
     MAX_TOKENS_PER_REQUEST = 250_000  # Auto-chunk if exceeded
 
