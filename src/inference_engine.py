@@ -96,7 +96,8 @@ class SecureGraphTraverser:
             max_depth: Maximum traversal depth (default: 2)
 
         Returns:
-            Dictionary with two keys:
+            Dictionary with three keys:
+            - "nodes": Dictionary mapping entity_id -> node details with attributes
             - "mini_graph": List of edge dictionaries
             - "citation_context": Document name -> page numbers mapping
 
@@ -107,6 +108,14 @@ class SecureGraphTraverser:
             ...     user_tags=["HR"],
             ...     max_depth=2
             ... )
+            >>> result["nodes"]
+            {
+                "entity_001": {
+                    "name": "John Smith",
+                    "type": "Person",
+                    "attributes": {"email": "john@example.com", "role": "Manager"}
+                }
+            }
             >>> result["mini_graph"]
             [
                 {
@@ -119,7 +128,7 @@ class SecureGraphTraverser:
         """
         if not start_entity_ids:
             logger.warning("No start_entity_ids provided, returning empty context")
-            return {"mini_graph": [], "citation_context": {}}
+            return {"nodes": {}, "mini_graph": [], "citation_context": {}}
 
         if max_depth < 0:
             raise ValueError(f"max_depth must be >= 0, got {max_depth}")
@@ -143,12 +152,19 @@ class SecureGraphTraverser:
             # Step 2: Format mini_graph
             mini_graph = self._format_mini_graph(edges)
 
-            # Step 3: Collect citations
+            # Step 3: Collect all traversed entity IDs
             traversed_entities = set()
             for edge in edges:
                 traversed_entities.add(edge[0])  # source_id
                 traversed_entities.add(edge[2])  # target_id
 
+            # Step 4: Fetch node details with attributes
+            node_details = self._get_node_details(
+                cursor,
+                list(traversed_entities)
+            )
+
+            # Step 5: Collect citations
             citation_context = self._collect_citations(
                 cursor,
                 list(traversed_entities),
@@ -156,11 +172,12 @@ class SecureGraphTraverser:
             )
 
             logger.info(
-                f"Context generated: {len(mini_graph)} edges, "
+                f"Context generated: {len(node_details)} nodes, {len(mini_graph)} edges, "
                 f"{len(citation_context)} documents"
             )
 
             return {
+                "nodes": node_details,
                 "mini_graph": mini_graph,
                 "citation_context": citation_context
             }
@@ -341,6 +358,83 @@ class SecureGraphTraverser:
             })
 
         return mini_graph
+
+    def _get_node_details(
+        self,
+        cursor: sqlite3.Cursor,
+        entity_ids: List[str]
+    ) -> Dict[str, Dict[str, Any]]:
+        """
+        Fetch full node details with attributes for given entity IDs.
+
+        Args:
+            cursor: Database cursor
+            entity_ids: List of entity IDs to fetch details for
+
+        Returns:
+            Dictionary mapping entity_id -> node details
+            Format: {
+                "entity_id": {
+                    "name": "canonical_name",
+                    "type": "entity_type",
+                    "attributes": {...}  # Parsed JSON attributes
+                }
+            }
+        """
+        if not entity_ids:
+            return {}
+
+        # Generate placeholders
+        placeholders = ', '.join('?' * len(entity_ids))
+
+        query = f"""
+        SELECT
+            unique_entity_id,
+            entity_type,
+            canonical_name,
+            attributes,
+            name_variants,
+            cluster_size
+        FROM entities
+        WHERE unique_entity_id IN ({placeholders})
+        """
+
+        cursor.execute(query, tuple(entity_ids))
+        rows = cursor.fetchall()
+
+        node_details = {}
+        for row in rows:
+            entity_id, entity_type, canonical_name, attributes_json, name_variants_json, cluster_size = row
+
+            # Parse JSON attributes
+            try:
+                attributes = json.loads(attributes_json) if attributes_json else {}
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.warning(
+                    f"Failed to parse attributes for {entity_id}: {e}"
+                )
+                attributes = {}
+
+            # Parse name variants
+            try:
+                name_variants = json.loads(name_variants_json) if name_variants_json else []
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.warning(
+                    f"Failed to parse name_variants for {entity_id}: {e}"
+                )
+                name_variants = []
+
+            node_details[entity_id] = {
+                "name": canonical_name,
+                "type": entity_type,
+                "attributes": attributes,
+                "name_variants": name_variants,
+                "cluster_size": cluster_size
+            }
+
+        logger.debug(f"Fetched details for {len(node_details)} nodes")
+
+        return node_details
 
     def _collect_citations(
         self,
