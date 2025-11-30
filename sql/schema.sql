@@ -10,10 +10,12 @@ CREATE TABLE IF NOT EXISTS documents (
     document_id TEXT PRIMARY KEY,          -- MD5 hash of document name
     document_name TEXT NOT NULL UNIQUE,    -- Original document name
     file_path TEXT,                        -- Path to source PDF
+    access_tags TEXT DEFAULT '["UNCLASSIFIED"]', -- ACL: JSON array of access tags (set by Superadmin)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_doc_name ON documents(document_name);
+CREATE INDEX IF NOT EXISTS idx_doc_access_tags ON documents(access_tags);
 
 -- ============================================================================
 -- 2. ENTITIES TABLE
@@ -44,6 +46,7 @@ CREATE TABLE IF NOT EXISTS relationships (
     from_entity_id TEXT NOT NULL,          -- Source entity
     to_entity_id TEXT NOT NULL,            -- Target entity
     attributes TEXT,                       -- JSON blob of relationship attributes
+    access_policy TEXT DEFAULT 'OPEN',     -- ACL: Access policy (set by Superadmin)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (from_entity_id) REFERENCES entities(unique_entity_id) ON DELETE CASCADE,
     FOREIGN KEY (to_entity_id) REFERENCES entities(unique_entity_id) ON DELETE CASCADE
@@ -53,6 +56,7 @@ CREATE INDEX IF NOT EXISTS idx_rel_type ON relationships(relationship_type);
 CREATE INDEX IF NOT EXISTS idx_rel_from ON relationships(from_entity_id);
 CREATE INDEX IF NOT EXISTS idx_rel_to ON relationships(to_entity_id);
 CREATE INDEX IF NOT EXISTS idx_rel_from_to ON relationships(from_entity_id, to_entity_id);
+CREATE INDEX IF NOT EXISTS idx_rel_access_policy ON relationships(access_policy);
 
 -- ============================================================================
 -- 4. ENTITY_OCCURRENCES TABLE (Junction Table)

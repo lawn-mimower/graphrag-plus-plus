@@ -177,7 +177,7 @@ def create_schema(conn: sqlite3.Connection):
 
 def insert_documents(conn: sqlite3.Connection, documents: Set[str]):
     """
-    Insert documents into database.
+    Insert documents into database with default UNCLASSIFIED access.
 
     Args:
         conn: SQLite connection
@@ -189,9 +189,9 @@ def insert_documents(conn: sqlite3.Connection, documents: Set[str]):
         doc_id = generate_document_hash(doc_name)
 
         cursor.execute("""
-            INSERT OR IGNORE INTO documents (document_id, document_name)
-            VALUES (?, ?)
-        """, (doc_id, doc_name))
+            INSERT OR IGNORE INTO documents (document_id, document_name, access_tags)
+            VALUES (?, ?, ?)
+        """, (doc_id, doc_name, '["UNCLASSIFIED"]'))
 
     conn.commit()
     logger.info(f"Inserted {len(documents)} documents")
@@ -346,9 +346,9 @@ def insert_relationships(
         cursor.execute("""
             INSERT OR REPLACE INTO relationships (
                 relationship_id, relationship_type, from_entity_id,
-                to_entity_id, attributes
-            ) VALUES (?, ?, ?, ?, ?)
-        """, (rel_id, rel_type, from_entity, to_entity, attributes_json))
+                to_entity_id, attributes, access_policy
+            ) VALUES (?, ?, ?, ?, ?, ?)
+        """, (rel_id, rel_type, from_entity, to_entity, attributes_json, 'OPEN'))
 
     conn.commit()
     logger.info(f"Inserted {len(relationship_map)} relationships")
