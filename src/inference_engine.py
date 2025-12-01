@@ -157,6 +157,9 @@ class SecureGraphTraverser:
             for edge in edges:
                 traversed_entities.add(edge[0])  # source_id
                 traversed_entities.add(edge[2])  # target_id
+            
+            # Also include the start entities, in case they are isolated
+            traversed_entities.update(start_entity_ids)
 
             # Step 4: Fetch node details with attributes
             node_details = self._get_node_details(
@@ -184,6 +187,171 @@ class SecureGraphTraverser:
 
         finally:
             conn.close()
+
+
+    def find_shortest_path(
+        self,
+        source_id: str,
+        target_id: str,
+        user_tags: List[str]
+    ) -> Dict[str, Any]:
+        """
+        Finds the shortest path between two entities using a secure,
+        SQL-based breadth-first search.
+
+        Args:
+            source_id: The starting entity ID
+            target_id: The target entity ID
+            user_tags: User's access tags for ACL filtering
+
+        Returns:
+            A context dictionary in the same format as get_context,
+            or an empty context if no path is found.
+        """
+        if not all([source_id, target_id]):
+            logger.warning("Source or target ID missing, cannot find path.")
+            return {"nodes": {}, "mini_graph": [], "citation_context": {}}
+
+        if source_id == target_id:
+            logger.warning("Source and target IDs are the same. Returning context for single node.")
+            return self.get_context([source_id], user_tags, max_depth=0)
+
+        logger.info(
+            f"Finding shortest path: {source_id} -> {target_id}, "
+            f"tags={user_tags}"
+        )
+
+        conn = sqlite3.connect(self.db_path)
+        try:
+            cursor = conn.cursor()
+
+            query, params = self._build_shortest_path_query(source_id, target_id, user_tags)
+
+            logger.debug(f"Executing shortest path query with {len(params)} parameters")
+            cursor.execute(query, params)
+            result = cursor.fetchone()
+
+            if not result or not result[0]:
+                logger.warning(f"No secure path found between {source_id} and {target_id}")
+                return {"nodes": {}, "mini_graph": [], "citation_context": {}}
+
+            path_str = result[0]
+            path_nodes = [node for node in path_str.split('|') if node]
+
+            logger.debug(f"Shortest path found: {' -> '.join(path_nodes)}")
+
+            edges = self._get_path_edges(cursor, path_nodes)
+
+            mini_graph = self._format_mini_graph(edges)
+            node_details = self._get_node_details(cursor, path_nodes)
+            citation_context = self._collect_citations(cursor, path_nodes, user_tags)
+
+            logger.info(
+                f"Path context generated: {len(node_details)} nodes, {len(mini_graph)} edges, "
+                f"{len(citation_context)} documents"
+            )
+
+            return {
+                "nodes": node_details,
+                "mini_graph": mini_graph,
+                "citation_context": citation_context
+            }
+
+        finally:
+            conn.close()
+
+
+    def _build_shortest_path_query(
+        self,
+        source_id: str,
+        target_id: str,
+        user_tags: List[str]
+    ) -> Tuple[str, Tuple]:
+        """
+        Builds a recursive CTE query to find the shortest path via BFS.
+        Returns the path as a delimited string.
+        """
+        tag_placeholders = ', '.join('?' * len(user_tags))
+        params = tuple(user_tags) + (source_id, f'|{source_id}|', source_id, target_id)
+
+        query = f"""
+        WITH RECURSIVE allowed_docs AS (
+            SELECT document_id FROM documents
+            WHERE access_tags LIKE '%"UNCLASSIFIED"%' OR EXISTS (
+                SELECT 1 FROM json_each(access_tags) AS tag WHERE tag.value IN ({tag_placeholders})
+            )
+        ),
+        grounded_entities AS (
+            SELECT DISTINCT eo.entity_id FROM entity_occurrences eo
+            JOIN allowed_docs ad ON eo.document_id = ad.document_id
+        ),
+        bfs(current_node, path, depth) AS (
+            -- Base case: start with the source node, ensuring it's grounded
+            SELECT ?, ?, 0
+            WHERE ? IN (SELECT entity_id FROM grounded_entities)
+
+            UNION ALL
+
+            -- Recursive step: explore neighbors
+            SELECT
+                CASE WHEN b.current_node = r.from_entity_id THEN r.to_entity_id ELSE r.from_entity_id END,
+                b.path || CASE WHEN b.current_node = r.from_entity_id THEN r.to_entity_id ELSE r.from_entity_id END || '|',
+                b.depth + 1
+            FROM bfs b
+            JOIN relationships r ON (b.current_node = r.from_entity_id OR b.current_node = r.to_entity_id)
+            WHERE
+                r.access_policy = 'OPEN'
+                AND (CASE WHEN b.current_node = r.from_entity_id THEN r.to_entity_id ELSE r.from_entity_id END) IN (SELECT entity_id FROM grounded_entities)
+                AND b.path NOT LIKE '%|' || CASE WHEN b.current_node = r.from_entity_id THEN r.to_entity_id ELSE r.from_entity_id END || '|%'
+        )
+        SELECT path FROM bfs WHERE current_node = ? ORDER BY depth ASC LIMIT 1;
+        """
+        return query, params
+
+
+    def _get_path_edges(self, cursor: sqlite3.Cursor, path_nodes: List[str]) -> List[Tuple]:
+        """
+        Fetches all edges that constitute a given path.
+        """
+        if len(path_nodes) < 2:
+            return []
+
+        # Create placeholders for all nodes in the path to fetch their relationships at once
+        node_pairs = []
+        for i in range(len(path_nodes) - 1):
+            node_pairs.append((path_nodes[i], path_nodes[i+1]))
+            node_pairs.append((path_nodes[i+1], path_nodes[i]))
+
+        placeholders = ', '.join(['(?, ?)'] * len(node_pairs))
+        params = [item for pair in node_pairs for item in pair]
+
+        query = f"""
+            SELECT
+                r.from_entity_id AS source_id,
+                e1.canonical_name AS source_name,
+                r.to_entity_id AS target_id,
+                e2.canonical_name AS target_name,
+                r.relationship_type AS relation,
+                r.attributes AS properties_json
+            FROM relationships r
+            JOIN entities e1 ON r.from_entity_id = e1.unique_entity_id
+            JOIN entities e2 ON r.to_entity_id = e2.unique_entity_id
+            WHERE (r.from_entity_id, r.to_entity_id) IN ({placeholders})
+        """
+        cursor.execute(query, tuple(params))
+        
+        # We need to order the edges correctly according to the path
+        edge_map = {(row[0], row[2]): row for row in cursor.fetchall()}
+        
+        ordered_edges = []
+        for i in range(len(path_nodes) - 1):
+            u, v = path_nodes[i], path_nodes[i+1]
+            edge = edge_map.get((u, v)) or edge_map.get((v, u))
+            if edge:
+                ordered_edges.append(edge)
+        
+        return ordered_edges
+    
 
     def _execute_traversal(
         self,

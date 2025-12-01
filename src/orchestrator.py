@@ -21,13 +21,15 @@ logger = logging.getLogger(__name__)
 
 class QueryOrchestrator:
     """
-    Sophisticated Query Orchestrator that maps Natural Language to SQL Schema.
+    Sophisticated Query Orchestrator that maps Natural Language to a graph.
+    It uses a "retrieve-then-reason" approach, first searching for candidate
+    entities and then using an LLM to plan the graph traversal.
 
-    Pipeline:
-    1. Schema-Aware Intent Extraction (Gemini)
-    2. Candidate Resolution (Milvus + SQL)
+    New Pipeline:
+    1. Broad-Phase Candidate Retrieval (Milvus)
+    2. LLM-Powered Query Planning (Gemini) -> 'laser' or 'flashlight' mode
     3. Security Filtering (ACL Bouncer)
-    4. Execution (Walker/Graph Traverser)
+    4. Execution (SecureGraphTraverser -> find_shortest_path or get_context)
     """
 
     def __init__(
@@ -38,30 +40,19 @@ class QueryOrchestrator:
     ):
         """
         Initialize the Query Orchestrator.
-
-        Args:
-            db_path: Path to SQLite knowledge graph database
-            milvus_path: Path to Milvus-lite database
-            gemini_model: Gemini model name for intent extraction
         """
         self.db_path = Path(db_path)
         self.milvus_path = milvus_path
 
-        # Validate database
         if not self.db_path.exists():
             raise FileNotFoundError(f"Database not found: {self.db_path}")
 
-        # Initialize Gemini client
         self.gemini_model_name = gemini_model or Config.MODEL_HEAVY
         self.client = genai.Client(api_key=Config.GOOGLE_API_KEY)
-
-        # Initialize Milvus engine
         self.milvus_engine = MilvusIngestionEngine(
             db_path=str(self.db_path),
             milvus_path=self.milvus_path
         )
-
-        # Initialize Graph Traverser (Walker)
         self.traverser = SecureGraphTraverser(db_path=str(self.db_path))
 
         logger.info(f"QueryOrchestrator initialized with model: {self.gemini_model_name}")
@@ -76,25 +67,7 @@ class QueryOrchestrator:
         max_type_results: int = 20
     ) -> Dict[str, Any]:
         """
-        Process a natural language query through the orchestration pipeline.
-
-        Args:
-            user_query: Natural language query from user
-            user_tags: User's access tags (e.g., ["HR", "FINANCE"])
-            max_depth: Maximum graph traversal depth
-            similarity_threshold: Minimum similarity score for Milvus matches
-            max_candidates_per_entity: Top-K results from Milvus per entity
-            max_type_results: Maximum entities to fetch per entity_type
-
-        Returns:
-            Dictionary with keys:
-            - status: "success" | "ambiguous" | "no_access" | "error"
-            - intent: Extracted intent (if successful)
-            - candidates: Candidate entities found (if any)
-            - nodes: Node details with attributes (if successful)
-            - mini_graph: Graph edges (if successful)
-            - citation_context: Document citations (if successful)
-            - message: Human-readable message
+        Process a natural language query using the retrieve-then-reason pipeline.
         """
         logger.info("=" * 80)
         logger.info(f"Processing query: {user_query}")
@@ -102,195 +75,213 @@ class QueryOrchestrator:
         logger.info("=" * 80)
 
         try:
-            # STEP 1: Schema-Aware Intent Extraction
-            logger.info("STEP 1: Schema-Aware Intent Extraction")
-            intent = self._extract_intent(user_query)
+            # STEP 1: Broad-Phase Candidate Retrieval (Milvus)
+            logger.info("STEP 1: Broad-Phase Candidate Retrieval (Milvus)")
+            pre_fetched_candidates = self.milvus_engine.search_similar_entities(
+                query_text=user_query,
+                top_k=10, # Fetch a broad set of initial candidates
+                similarity_threshold=similarity_threshold - 0.1 # Use a slightly lower threshold for broad phase
+            )
+            logger.info(f"Found {len(pre_fetched_candidates)} initial candidates via semantic search.")
+
+            # STEP 2: LLM-Powered Query Planning
+            logger.info("STEP 2: LLM-Powered Query Planning")
+            intent = self._extract_intent(user_query, pre_fetched_candidates)
 
             if not intent or self._is_intent_empty(intent):
                 logger.warning("Intent extraction failed or returned empty results")
                 return {
                     "status": "ambiguous",
                     "intent": intent,
-                    "message": "Could not understand the query. Please be more specific about entities, types, or relationships."
+                    "message": "Could not understand the query. Please be more specific."
                 }
 
-            logger.info(f"Extracted intent: {json.dumps(intent, indent=2)}")
+            logger.info(f"LLM Query Plan: {json.dumps(intent, indent=2)}")
 
-            # STEP 2: Candidate Resolution
-            logger.info("STEP 2: Candidate Resolution (Milvus + SQL)")
-            candidate_ids = self._resolve_candidates(
-                intent,
-                similarity_threshold,
-                max_candidates_per_entity,
-                max_type_results
-            )
-
-            if not candidate_ids:
-                logger.warning("No candidates found matching the query")
-                return {
-                    "status": "ambiguous",
-                    "intent": intent,
-                    "candidates": [],
-                    "message": "No entities found matching your query. Try different search terms."
-                }
-
-            logger.info(f"Found {len(candidate_ids)} candidate entities")
-
-            # STEP 3: Security Filtering
-            logger.info("STEP 3: Security Filtering (ACL Bouncer)")
-            valid_ids = self._apply_security_filter(candidate_ids, user_tags)
-
-            if not valid_ids:
-                logger.warning("All candidates filtered out by ACL")
-
-                # Get candidate names for better error message
-                candidate_names = self._get_entity_names(candidate_ids[:5])
-
-                return {
-                    "status": "no_access",
-                    "intent": intent,
-                    "candidates": candidate_names,
-                    "message": f"Found {len(candidate_ids)} entities but you don't have access to them. "
-                               f"Candidates: {', '.join(candidate_names[:3])}..."
-                }
-
-            logger.info(f"Security filter passed: {len(valid_ids)} valid entities")
-
-            # STEP 4: Execution (Graph Traversal)
-            logger.info("STEP 4: Execution (Walker/Graph Traverser)")
-            context = self.traverser.get_context(
-                start_entity_ids=valid_ids,
-                user_tags=user_tags,
-                max_depth=max_depth
-            )
-
-            # Get candidate details for response
-            candidate_details = self._get_candidate_details(valid_ids)
-
-            logger.info(f"Query processing complete: {len(context.get('nodes', {}))} nodes, "
-                       f"{len(context['mini_graph'])} edges, "
-                       f"{len(context['citation_context'])} documents")
-
-            return {
-                "status": "success",
-                "intent": intent,
-                "candidates": candidate_details,
-                "nodes": context.get('nodes', {}),
-                "mini_graph": context['mini_graph'],
-                "citation_context": context['citation_context'],
-                "message": f"Found {len(valid_ids)} entities, {len(context.get('nodes', {}))} nodes, and {len(context['mini_graph'])} relationships."
-            }
+            # STEP 3 & 4: Execute based on query mode
+            if intent.get("query_mode") == "laser":
+                return self._execute_laser_mode(intent, user_tags)
+            else: # Default to flashlight mode
+                return self._execute_flashlight_mode(
+                    intent, user_tags, max_depth, similarity_threshold,
+                    max_candidates_per_entity, max_type_results
+                )
 
         except Exception as e:
             logger.error(f"Error processing query: {e}", exc_info=True)
+            return {"status": "error", "message": f"An error occurred: {str(e)}"}
+
+    def _execute_laser_mode(self, intent: Dict, user_tags: List[str]) -> Dict[str, Any]:
+        """Executor for 'laser' mode (shortest path)."""
+        logger.info("Executing in LASER mode (shortest path).")
+        source_id = intent.get("source_entity", {}).get("id")
+        target_id = intent.get("target_entity", {}).get("id")
+
+        if not source_id or not target_id:
             return {
-                "status": "error",
-                "message": f"An error occurred: {str(e)}"
+                "status": "ambiguous", "intent": intent,
+                "message": "LLM failed to identify a clear source or target entity for pathfinding."
             }
 
-    def _get_schema_summary(self) -> str:
-        """
-        Get a summary of available entity types and relationship types from SQL.
+        # STEP 3: Security Filtering
+        logger.info("STEP 3: Security Filtering (ACL Bouncer)")
+        valid_ids = self._apply_security_filter([source_id, target_id], user_tags)
+        
+        if not {source_id, target_id}.issubset(set(valid_ids)):
+            logger.warning(f"Source or target entity for path search failed security check.")
+            return {
+                "status": "no_access", "intent": intent,
+                "message": "You do not have access to the source or target entity for the path query."
+            }
+        
+        logger.info("Security filter passed for source and target.")
 
-        Returns:
-            Formatted string with schema information
-        """
+        # STEP 4: Execution
+        logger.info(f"STEP 4: Traverser executing find_shortest_path({source_id}, {target_id})")
+        context = self.traverser.find_shortest_path(
+            source_id=source_id,
+            target_id=target_id,
+            user_tags=user_tags
+        )
+        
+        candidate_details = self._get_candidate_details([source_id, target_id])
+
+        if not context.get("mini_graph"):
+             message = f"Successfully found entities, but no secure path exists between them."
+        else:
+             message = f"Found a path with {len(context['mini_graph'])} edges between the entities."
+
+        return {
+            "status": "success", "intent": intent, "candidates": candidate_details,
+            "nodes": context.get('nodes', {}), "mini_graph": context['mini_graph'],
+            "citation_context": context['citation_context'], "message": message
+        }
+
+    def _execute_flashlight_mode(self, intent: Dict, user_tags: List[str], max_depth: int,
+                                 similarity_threshold: float, max_candidates_per_entity: int,
+                                 max_type_results: int) -> Dict[str, Any]:
+        """Executor for 'flashlight' mode (general traversal)."""
+        logger.info("Executing in FLASHLIGHT mode (general traversal).")
+        
+        logger.info("STEP 2b: Candidate Resolution (Milvus + SQL)")
+        candidate_ids = self._resolve_candidates(
+            intent, similarity_threshold, max_candidates_per_entity, max_type_results
+        )
+
+        if not candidate_ids:
+            return {
+                "status": "ambiguous", "intent": intent, "candidates": [],
+                "message": "No entities found matching your query. Try different search terms."
+            }
+        logger.info(f"Found {len(candidate_ids)} candidate entities.")
+
+        # STEP 3: Security Filtering
+        logger.info("STEP 3: Security Filtering (ACL Bouncer)")
+        valid_ids = self._apply_security_filter(candidate_ids, user_tags)
+
+        if not valid_ids:
+            candidate_names = self._get_entity_names(candidate_ids[:5])
+            return {
+                "status": "no_access", "intent": intent, "candidates": candidate_names,
+                "message": f"Found {len(candidate_ids)} potential entities but you don't have access. "
+                           f"Candidates: {', '.join(candidate_names[:3])}..."
+            }
+        logger.info(f"Security filter passed: {len(valid_ids)} valid entities.")
+
+        # STEP 4: Execution
+        logger.info(f"STEP 4: Traverser executing get_context(depth={max_depth})")
+        context = self.traverser.get_context(
+            start_entity_ids=valid_ids, user_tags=user_tags, max_depth=max_depth
+        )
+        candidate_details = self._get_candidate_details(valid_ids)
+
+        return {
+            "status": "success", "intent": intent, "candidates": candidate_details,
+            "nodes": context.get('nodes', {}), "mini_graph": context['mini_graph'],
+            "citation_context": context['citation_context'],
+            "message": f"Found {len(valid_ids)} entities, {len(context.get('nodes', {}))} nodes, and {len(context['mini_graph'])} relationships."
+        }
+
+    def _get_schema_summary(self) -> str:
+        """Get a summary of available entity and relationship types from SQL."""
         conn = sqlite3.connect(self.db_path)
         try:
             cursor = conn.cursor()
-
-            # Get distinct entity types
-            cursor.execute("""
-                SELECT DISTINCT entity_type
-                FROM entities
-                ORDER BY entity_type
-            """)
+            cursor.execute("SELECT DISTINCT entity_type FROM entities ORDER BY entity_type")
             entity_types = [row[0] for row in cursor.fetchall()]
-
-            # Get distinct relationship types
-            cursor.execute("""
-                SELECT DISTINCT relationship_type
-                FROM relationships
-                ORDER BY relationship_type
-            """)
+            cursor.execute("SELECT DISTINCT relationship_type FROM relationships ORDER BY relationship_type")
             relationship_types = [row[0] for row in cursor.fetchall()]
-
-            # Format as string
-            schema_summary = f"""Available Entity Types: {entity_types}
-Available Relationship Types: {relationship_types}"""
-
-            return schema_summary
-
+            return f"Available Entity Types: {entity_types}\nAvailable Relationship Types: {relationship_types}"
         finally:
             conn.close()
+    
+    def _format_candidates_for_prompt(self, candidates: List[Dict]) -> str:
+        """Formats a list of candidate entities for inclusion in an LLM prompt."""
+        if not candidates:
+            return "No pre-fetched candidates found."
+        
+        lines = ["Pre-fetched candidates from semantic search:"]
+        for cand in candidates:
+            lines.append(f"- ID: {cand['sql_id']}, Name: \"{cand['canonical_name']}\", Type: {cand['entity_type']} (Score: {cand['similarity_score']:.2f})")
+        return "\n".join(lines)
 
-    def _extract_intent(self, user_query: str) -> Optional[Dict[str, List[str]]]:
+    def _extract_intent(self, user_query: str, pre_fetched_candidates: List[Dict]) -> Optional[Dict[str, Any]]:
         """
-        Extract intent from user query using Gemini with schema awareness.
-
-        Args:
-            user_query: Natural language query
-
-        Returns:
-            Dictionary with keys: entities, entity_types, relationship_types
-            Returns None if extraction fails
+        Acts as a query planner, determining the mode ('laser' or 'flashlight')
+        and extracting parameters using a list of pre-fetched candidates.
         """
         schema_summary = self._get_schema_summary()
+        candidate_summary = self._format_candidates_for_prompt(pre_fetched_candidates)
 
-        prompt = f"""You are a query intent analyzer for a knowledge graph system.
+        prompt = f"""You are a Query Planner for a knowledge graph. Your job is to analyze a user's query and decide the best way to traverse the graph.
 
-SCHEMA INFORMATION:
+There are two modes:
+1.  **laser**: Use for "how is X related to Y?" or "find path between X and Y" questions. This mode requires exactly one `source_entity` and one `target_entity`.
+2.  **flashlight**: Use for all other questions, like "who is X?", "what is X?", or "show me all companies". This mode explores around one or more entities.
+
+You are given a list of pre-fetched candidates from a semantic search. You must use the IDs and Names from this list.
+
+CONTEXT:
+---
 {schema_summary}
+---
+{candidate_summary}
+---
 
 USER QUERY:
-{user_query}
+"{user_query}"
 
 TASK:
-Analyze the user query and extract items that match our schema. Output a JSON object with these fields:
-- "entities": List of specific named entities mentioned (e.g., ["John Smith", "Acme Corp"])
-- "entity_types": List of entity types to search for (must match available types)
-- "relationship_types": List of relationship types mentioned (must match available types)
+First, determine the query type. Look for keywords like "related to", "path between", "connection between", "how is... connected to". If the query structure involves two distinct entities and one of these connecting phrases, you MUST set `query_mode` to "laser". Otherwise, the mode is "flashlight".
 
-RULES:
-1. Only include entity_types and relationship_types that EXACTLY match the available types
-2. Extract all specific entity names mentioned in the query
-3. If you cannot find clear matches, return empty lists
-4. Output ONLY valid JSON, no additional text
+Then, based on the mode, output a JSON object with your query plan.
 
-EXAMPLE OUTPUT:
-{{
-  "entities": ["John Smith", "TechCorp"],
-  "entity_types": ["Person", "Project"],
-  "relationship_types": ["WORKS_ON", "MANAGES"]
-}}
+1.  If `query_mode` is "laser":
+    -   From the pre-fetched candidates, identify the best match for the TWO entities in the query.
+    -   Populate `source_entity` and `target_entity` with their exact ID and Name from the candidate list.
+    -   Do NOT use the `entities` or `entity_types` fields.
 
-Now analyze the query and output JSON:"""
+2.  If `query_mode` is "flashlight":
+    -   Populate `entities` with any specific entity names mentioned.
+    -   Populate `entity_types` and `relationship_types` if they are mentioned and match the schema.
+    -   Do NOT use the `source_entity` or `target_entity` fields.
 
+JSON OUTPUT RULES:
+- Output ONLY a valid JSON object.
+- For "laser" mode, the JSON must contain: `{{ "query_mode": "laser", "source_entity": {{ "id": "ID_of_source", "name": "Name of Source" }}, "target_entity": {{ "id": "ID_of_target", "name": "Name of Target" }} }}`
+- For "flashlight" mode, the JSON must contain: `{{ "query_mode": "flashlight", "entities": ["Entity Name"], "entity_types": ["Type"], "relationship_types": ["Type"] }}`
+
+Now, analyze the query and the provided context and generate the JSON plan.
+"""
+        logger.info(f"Full LLM planning prompt:\n{prompt}")
         try:
             response = self.client.models.generate_content(
                 model=self.gemini_model_name,
                 contents=prompt,
-                config=genai.types.GenerateContentConfig(
-                    temperature=0.1,  # Low temperature for structured extraction
-                    max_output_tokens=8192,
-                )
+                config=genai.types.GenerateContentConfig(temperature=0.1, max_output_tokens=8192)
             )
 
-            # Check for valid response
-            if not response or not hasattr(response, 'text'):
-                logger.error("Invalid response from Gemini")
-                return None
-
-            response_text = response.text
-
-            if not response_text:
-                logger.error("Gemini returned empty response")
-                return None
-
-            response_text = response_text.strip()
-
-            # Try to extract JSON from response
-            # Remove markdown code blocks if present
+            response_text = response.text.strip()
             if "```json" in response_text:
                 response_text = response_text.split("```json")[1].split("```")[0].strip()
             elif "```" in response_text:
@@ -298,41 +289,35 @@ Now analyze the query and output JSON:"""
 
             intent = json.loads(response_text)
 
-            # Validate structure
-            if not isinstance(intent, dict):
-                logger.error("Intent is not a dictionary")
-                return None
+            if not isinstance(intent, dict): return None
 
-            # Ensure required keys exist
-            intent.setdefault('entities', [])
-            intent.setdefault('entity_types', [])
-            intent.setdefault('relationship_types', [])
+            if intent.get("query_mode") == "flashlight":
+                intent.setdefault('entities', [])
+                intent.setdefault('entity_types', [])
+                intent.setdefault('relationship_types', [])
 
             return intent
 
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse intent JSON: {e}")
-            logger.debug(f"Response text: {response_text}")
-            return None
-        except Exception as e:
-            logger.error(f"Error extracting intent: {e}", exc_info=True)
+        except (json.JSONDecodeError, Exception) as e:
+            logger.error(f"Failed to parse or execute intent extraction: {e}", exc_info=True)
             return None
 
-    def _is_intent_empty(self, intent: Dict[str, List[str]]) -> bool:
-        """
-        Check if intent has no useful information.
-
-        Args:
-            intent: Intent dictionary
-
-        Returns:
-            True if intent is empty/useless
-        """
-        return (
-            not intent.get('entities') and
-            not intent.get('entity_types') and
-            not intent.get('relationship_types')
-        )
+    def _is_intent_empty(self, intent: Dict[str, Any]) -> bool:
+        """Check if the extracted intent is empty or unusable."""
+        if not intent:
+            return True
+        mode = intent.get("query_mode")
+        if mode == "laser":
+            source = intent.get("source_entity", {})
+            target = intent.get("target_entity", {})
+            return not all([source.get("id"), target.get("id")])
+        elif mode == "flashlight":
+            return not any([
+                intent.get('entities'),
+                intent.get('entity_types'),
+                intent.get('relationship_types')
+            ])
+        return True # Unrecognized mode is considered empty
 
     def _resolve_candidates(
         self,
@@ -343,19 +328,9 @@ Now analyze the query and output JSON:"""
     ) -> List[str]:
         """
         Resolve candidates using Milvus (for entities) and SQL (for types).
-
-        Args:
-            intent: Extracted intent
-            similarity_threshold: Minimum similarity for Milvus
-            max_candidates_per_entity: Top-K from Milvus
-            max_type_results: Max results per entity type
-
-        Returns:
-            List of candidate sql_ids
+        Used only in 'flashlight' mode.
         """
         candidate_ids = set()
-
-        # Part A: Vector search for named entities
         for entity_name in intent.get('entities', []):
             try:
                 matches = self.milvus_engine.search_similar_entities(
@@ -363,185 +338,90 @@ Now analyze the query and output JSON:"""
                     top_k=max_candidates_per_entity,
                     similarity_threshold=similarity_threshold
                 )
-
                 for match in matches:
                     candidate_ids.add(match['sql_id'])
-                    logger.debug(
-                        f"Milvus match: {entity_name} -> {match['canonical_name']} "
-                        f"(score={match['similarity_score']})"
-                    )
-
             except Exception as e:
                 logger.error(f"Error searching for '{entity_name}': {e}")
-                continue
-
-        # Part B: SQL search for entity types
+        
         for entity_type in intent.get('entity_types', []):
             try:
                 type_ids = self._get_entities_by_type(entity_type, max_type_results)
                 candidate_ids.update(type_ids)
-                logger.debug(f"Type match: {entity_type} -> {len(type_ids)} entities")
-
             except Exception as e:
                 logger.error(f"Error searching for type '{entity_type}': {e}")
-                continue
 
         return list(candidate_ids)
 
-    def _get_entities_by_type(
-        self,
-        entity_type: str,
-        limit: int = 20
-    ) -> List[str]:
-        """
-        Get entity IDs by entity type from SQL.
-
-        Args:
-            entity_type: Entity type to search for
-            limit: Maximum number of results
-
-        Returns:
-            List of entity IDs
-        """
+    def _get_entities_by_type(self, entity_type: str, limit: int = 20) -> List[str]:
+        """Get entity IDs by entity type from SQL."""
         conn = sqlite3.connect(self.db_path)
         try:
             cursor = conn.cursor()
-
             cursor.execute(
                 "SELECT unique_entity_id FROM entities WHERE entity_type = ? LIMIT ?",
                 (entity_type, limit)
             )
-
             return [row[0] for row in cursor.fetchall()]
-
         finally:
             conn.close()
 
-    def _apply_security_filter(
-        self,
-        candidate_ids: List[str],
-        user_tags: List[str]
-    ) -> List[str]:
-        """
-        Filter candidates by ACL - only keep entities in accessible documents.
-
-        Args:
-            candidate_ids: List of candidate entity IDs
-            user_tags: User's access tags
-
-        Returns:
-            List of valid entity IDs that pass ACL
-        """
-        if not candidate_ids:
-            return []
-
+    def _apply_security_filter(self, candidate_ids: List[str], user_tags: List[str]) -> List[str]:
+        """Filter candidates by ACL."""
+        if not candidate_ids: return []
         conn = sqlite3.connect(self.db_path)
         try:
             cursor = conn.cursor()
-
-            # Generate placeholders
-            id_placeholders = ', '.join('?' * len(candidate_ids))
+            # Filter out potential None values from candidate_ids
+            filtered_candidate_ids = [cid for cid in candidate_ids if cid]
+            if not filtered_candidate_ids:
+                return []
+            
+            id_placeholders = ', '.join('?' * len(filtered_candidate_ids))
             tag_placeholders = ', '.join('?' * len(user_tags))
-
-            # Build query to check which entities are in accessible documents
             query = f"""
             SELECT DISTINCT eo.entity_id
             FROM entity_occurrences eo
             INNER JOIN documents d ON eo.document_id = d.document_id
-            WHERE
-                eo.entity_id IN ({id_placeholders})
-                AND (
-                    -- Always allow UNCLASSIFIED
-                    d.access_tags LIKE '%"UNCLASSIFIED"%'
-                    OR
-                    -- Allow if any user tag matches
-                    EXISTS (
-                        SELECT 1
-                        FROM json_each(d.access_tags) AS tag
-                        WHERE tag.value IN ({tag_placeholders})
-                    )
+            WHERE eo.entity_id IN ({id_placeholders}) AND (
+                d.access_tags LIKE '%"UNCLASSIFIED"%' OR EXISTS (
+                    SELECT 1 FROM json_each(d.access_tags) AS tag
+                    WHERE tag.value IN ({tag_placeholders})
                 )
-            """
-
-            params = tuple(candidate_ids) + tuple(user_tags)
-            cursor.execute(query, params)
-
-            valid_ids = [row[0] for row in cursor.fetchall()]
-
-            logger.debug(
-                f"ACL filter: {len(candidate_ids)} candidates -> {len(valid_ids)} valid"
             )
-
-            return valid_ids
-
+            """
+            params = tuple(filtered_candidate_ids) + tuple(user_tags)
+            cursor.execute(query, params)
+            return [row[0] for row in cursor.fetchall()]
         finally:
             conn.close()
 
     def _get_entity_names(self, entity_ids: List[str]) -> List[str]:
-        """
-        Get canonical names for entity IDs.
-
-        Args:
-            entity_ids: List of entity IDs
-
-        Returns:
-            List of canonical names
-        """
-        if not entity_ids:
-            return []
-
+        """Get canonical names for entity IDs."""
+        if not entity_ids: return []
         conn = sqlite3.connect(self.db_path)
         try:
             cursor = conn.cursor()
-
             placeholders = ', '.join('?' * len(entity_ids))
             cursor.execute(
                 f"SELECT canonical_name FROM entities WHERE unique_entity_id IN ({placeholders})",
                 tuple(entity_ids)
             )
-
             return [row[0] for row in cursor.fetchall()]
-
         finally:
             conn.close()
 
     def _get_candidate_details(self, entity_ids: List[str]) -> List[Dict[str, str]]:
-        """
-        Get detailed information about candidate entities.
-
-        Args:
-            entity_ids: List of entity IDs
-
-        Returns:
-            List of dictionaries with entity details
-        """
-        if not entity_ids:
-            return []
-
+        """Get detailed information about candidate entities."""
+        if not entity_ids: return []
         conn = sqlite3.connect(self.db_path)
         try:
             cursor = conn.cursor()
-
             placeholders = ', '.join('?' * len(entity_ids))
             cursor.execute(
-                f"""
-                SELECT unique_entity_id, entity_type, canonical_name
-                FROM entities
-                WHERE unique_entity_id IN ({placeholders})
-                """,
+                f"SELECT unique_entity_id, entity_type, canonical_name FROM entities WHERE unique_entity_id IN ({placeholders})",
                 tuple(entity_ids)
             )
-
-            candidates = []
-            for row in cursor.fetchall():
-                candidates.append({
-                    'entity_id': row[0],
-                    'entity_type': row[1],
-                    'canonical_name': row[2]
-                })
-
-            return candidates
-
+            return [{'entity_id': row[0], 'entity_type': row[1], 'canonical_name': row[2]} for row in cursor.fetchall()]
         finally:
             conn.close()
 
@@ -585,7 +465,7 @@ if __name__ == "__main__":
     orchestrator = QueryOrchestrator()
 
     # Example query
-    test_query = "who is director a to director b?"
+    test_query = "who are the key investors in the picture?"
     test_tags = ["UNCLASSIFIED"]
 
     print(f"\nQuery: {test_query}")

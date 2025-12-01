@@ -1,8 +1,8 @@
 """
-Milvus Ingestion Script for Query Orchestrator.
+Milvus Inestion Script for Query Orchestrator.
 
 Synchronizes SQL entities with Milvus vector database for semantic search.
-Stores: sql_id, entity_type, canonical_name, and embedding vector.
+Embeds a structured text representation of each entity's full attributes.
 """
 
 import sqlite3
@@ -26,7 +26,7 @@ class MilvusIngestionEngine:
     - sql_id: Matches unique_entity_id from SQL (MD5 hash)
     - entity_type: Matches entity_type from SQL
     - canonical_name: Matches canonical_name from SQL
-    - vector: Embedding of canonical_name
+    - vector: Embedding of the entity's full attribute text representation.
     """
 
     def __init__(
@@ -99,9 +99,17 @@ class MilvusIngestionEngine:
             batch = entities[i:i + batch_size]
 
             # Generate embeddings for batch
-            texts = [entity['canonical_name'] for entity in batch]
+            texts_to_embed = []
+            for entity in batch:
+                # Create a structured text representation of the entity's attributes
+                text_representation = ""
+                for key, value in entity.items():
+                    if value is not None:
+                        text_representation += f"{key}: {value}\n"
+                texts_to_embed.append(text_representation.strip())
+            
             embeddings = self.model.encode(
-                texts,
+                texts_to_embed,
                 batch_size=32,
                 show_progress_bar=False,
                 convert_to_numpy=True
@@ -109,11 +117,12 @@ class MilvusIngestionEngine:
 
             # Prepare data for Milvus
             data = []
-            for entity, embedding in zip(batch, embeddings):
+            for entity, embedding, text_rep in zip(batch, embeddings, texts_to_embed):
                 data.append({
-                    "sql_id": entity['sql_id'],
+                    "sql_id": entity['unique_entity_id'],
                     "entity_type": entity['entity_type'],
                     "canonical_name": entity['canonical_name'],
+                    "embedding_text": text_rep,
                     "vector": embedding.tolist()
                 })
 
@@ -136,40 +145,29 @@ class MilvusIngestionEngine:
             "collection_name": self.collection_name
         }
 
-    def _read_entities_from_sql(self) -> List[Dict[str, str]]:
+    def _read_entities_from_sql(self) -> List[Dict[str, Any]]:
         """
-        Read all entities from SQL database.
+        Read all entities and all their attributes from the SQL database.
 
         Returns:
-            List of entity dictionaries with sql_id, entity_type, canonical_name
+            List of entity dictionaries, where each dictionary contains a full entity record.
         """
         if not self.db_path.exists():
             raise FileNotFoundError(f"Database not found: {self.db_path}")
 
         conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row  # Makes rows accessible by column name
         try:
             cursor = conn.cursor()
 
-            query = """
-            SELECT
-                unique_entity_id,
-                entity_type,
-                canonical_name
-            FROM entities
-            ORDER BY unique_entity_id
-            """
+            # Select all columns for all entities
+            query = "SELECT * FROM entities ORDER BY unique_entity_id"
 
             cursor.execute(query)
             rows = cursor.fetchall()
 
-            entities = []
-            for row in rows:
-                entities.append({
-                    'sql_id': row[0],
-                    'entity_type': row[1],
-                    'canonical_name': row[2]
-                })
-
+            # Convert rows to a list of dictionaries
+            entities = [dict(row) for row in rows]
             return entities
 
         finally:
@@ -233,8 +231,8 @@ class MilvusIngestionEngine:
     def search_similar_entities(
         self,
         query_text: str,
-        top_k: int = 5,
-        similarity_threshold: float = 0.7
+        top_k: int = 20,
+        similarity_threshold: float = 0.5
     ) -> List[Dict[str, Any]]:
         """
         Search for similar entities using semantic similarity.
@@ -261,7 +259,7 @@ class MilvusIngestionEngine:
             collection_name=self.collection_name,
             data=[query_embedding.tolist()],
             limit=top_k,
-            output_fields=["sql_id", "entity_type", "canonical_name"]
+            output_fields=["sql_id", "entity_type", "canonical_name", "embedding_text"]
         )
 
         # Filter by similarity threshold and format results
@@ -276,7 +274,8 @@ class MilvusIngestionEngine:
                     'sql_id': hit['entity']['sql_id'],
                     'entity_type': hit['entity']['entity_type'],
                     'canonical_name': hit['entity']['canonical_name'],
-                    'similarity_score': round(similarity, 4)
+                    'similarity_score': round(similarity, 4),
+                    'embedding_text': hit['entity']['embedding_text']
                 })
 
         return matches
