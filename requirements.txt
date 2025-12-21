@@ -16,7 +16,7 @@ Pillow>=10.0.0
 
 # Knowledge Graph
 networkx>=3.0
-matplotlib>=3.7.0
+# matplotlib>=3.7.0  # Now optional - Excel rendering uses PIL instead
 
 # Deduplication Libraries
 # Splink for probabilistic matching

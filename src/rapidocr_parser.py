@@ -496,49 +496,177 @@ class XLSXParser(DocumentParser):
             return []
 
     def _render_dataframe(self, df: 'pd.DataFrame', title: str) -> Image.Image:
-        """Render DataFrame as image."""
-        import matplotlib.pyplot as plt
-        import tempfile
+        """
+        Render DataFrame as image using PIL (much faster than matplotlib).
 
+        Args:
+            df: Pandas DataFrame
+            title: Sheet title
+
+        Returns:
+            PIL Image of the rendered table
+        """
         try:
-            fig, ax = plt.subplots(figsize=(12, max(8, len(df) * 0.3)))
-            ax.axis('tight')
-            ax.axis('off')
-            ax.set_title(title, fontsize=14, fontweight='bold')
+            from PIL import ImageDraw, ImageFont
 
             # Limit display for large DataFrames
             display_df = df.head(50) if len(df) > 50 else df
+            truncated = len(df) > 50
 
-            # Create table
-            table = ax.table(
-                cellText=display_df.values,
-                colLabels=display_df.columns,
-                cellLoc='left',
-                loc='center'
+            # Configuration
+            CELL_PADDING = 10
+            HEADER_HEIGHT = 40
+            TITLE_HEIGHT = 50
+            ROW_HEIGHT = 30
+            MIN_CELL_WIDTH = 80
+            MAX_CELL_WIDTH = 300
+            FONT_SIZE = 12
+            HEADER_FONT_SIZE = 14
+            TITLE_FONT_SIZE = 16
+
+            # Try to load a font, fall back to default if not available
+            try:
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", FONT_SIZE)
+                header_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", HEADER_FONT_SIZE)
+                title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", TITLE_FONT_SIZE)
+            except:
+                # Fallback to default font
+                font = ImageFont.load_default()
+                header_font = ImageFont.load_default()
+                title_font = ImageFont.load_default()
+
+            # Calculate column widths based on content
+            col_widths = []
+            for col in display_df.columns:
+                # Get max width of column name and values
+                header_text = str(col)[:30]  # Truncate long headers
+                max_content_width = len(header_text) * 8  # Rough estimate
+
+                for val in display_df[col]:
+                    val_text = str(val)[:30]  # Truncate long values
+                    max_content_width = max(max_content_width, len(val_text) * 8)
+
+                # Apply bounds
+                width = max(MIN_CELL_WIDTH, min(max_content_width + CELL_PADDING * 2, MAX_CELL_WIDTH))
+                col_widths.append(width)
+
+            # Calculate image dimensions
+            total_width = sum(col_widths) + CELL_PADDING * 2
+            total_height = TITLE_HEIGHT + HEADER_HEIGHT + (len(display_df) * ROW_HEIGHT) + CELL_PADDING * 2
+
+            if truncated:
+                total_height += ROW_HEIGHT  # Extra row for truncation notice
+
+            # Create image
+            img = Image.new('RGB', (total_width, total_height), color='white')
+            draw = ImageDraw.Draw(img)
+
+            # Draw title
+            title_y = CELL_PADDING
+            draw.text((CELL_PADDING, title_y), title, fill='black', font=title_font)
+
+            # Draw header background
+            header_y = TITLE_HEIGHT
+            draw.rectangle(
+                [(CELL_PADDING, header_y), (total_width - CELL_PADDING, header_y + HEADER_HEIGHT)],
+                fill='#E0E0E0',
+                outline='black'
             )
-            table.auto_set_font_size(False)
-            table.set_fontsize(8)
-            table.scale(1, 1.5)
 
-            # Save to image
-            with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
-                plt.savefig(tmp.name, bbox_inches='tight', dpi=150)
-                tmp_path = Path(tmp.name)
+            # Draw column headers
+            x_offset = CELL_PADDING
+            for i, (col, width) in enumerate(zip(display_df.columns, col_widths)):
+                col_text = str(col)[:30]  # Truncate if too long
+                draw.text(
+                    (x_offset + CELL_PADDING // 2, header_y + CELL_PADDING),
+                    col_text,
+                    fill='black',
+                    font=header_font
+                )
 
-            # Load image
-            with Image.open(tmp_path) as img:
-                image = img.copy()
+                # Draw vertical separator
+                if i < len(display_df.columns) - 1:
+                    draw.line(
+                        [(x_offset + width, header_y), (x_offset + width, header_y + HEADER_HEIGHT)],
+                        fill='black',
+                        width=1
+                    )
 
-            # Cleanup
-            plt.close()
-            tmp_path.unlink()
+                x_offset += width
 
-            return image
+            # Draw data rows
+            y_offset = header_y + HEADER_HEIGHT
+            for row_idx, row in display_df.iterrows():
+                x_offset = CELL_PADDING
+
+                # Alternate row background
+                if row_idx % 2 == 0:
+                    draw.rectangle(
+                        [(CELL_PADDING, y_offset), (total_width - CELL_PADDING, y_offset + ROW_HEIGHT)],
+                        fill='#F5F5F5'
+                    )
+
+                # Draw horizontal line
+                draw.line(
+                    [(CELL_PADDING, y_offset), (total_width - CELL_PADDING, y_offset)],
+                    fill='black',
+                    width=1
+                )
+
+                # Draw cell values
+                for i, (val, width) in enumerate(zip(row, col_widths)):
+                    val_text = str(val)[:30]  # Truncate if too long
+                    draw.text(
+                        (x_offset + CELL_PADDING // 2, y_offset + CELL_PADDING // 2),
+                        val_text,
+                        fill='black',
+                        font=font
+                    )
+
+                    # Draw vertical separator
+                    if i < len(display_df.columns) - 1:
+                        draw.line(
+                            [(x_offset + width, y_offset), (x_offset + width, y_offset + ROW_HEIGHT)],
+                            fill='#CCCCCC',
+                            width=1
+                        )
+
+                    x_offset += width
+
+                y_offset += ROW_HEIGHT
+
+            # Draw bottom border
+            draw.line(
+                [(CELL_PADDING, y_offset), (total_width - CELL_PADDING, y_offset)],
+                fill='black',
+                width=2
+            )
+
+            # Add truncation notice if applicable
+            if truncated:
+                draw.text(
+                    (CELL_PADDING, y_offset + CELL_PADDING),
+                    f"... ({len(df) - 50} more rows not shown)",
+                    fill='#666666',
+                    font=font
+                )
+
+            # Draw outer border
+            draw.rectangle(
+                [(CELL_PADDING, TITLE_HEIGHT), (total_width - CELL_PADDING, y_offset)],
+                outline='black',
+                width=2
+            )
+
+            return img
 
         except Exception as e:
-            logger.warning(f"Failed to render DataFrame: {e}")
-            # Return blank placeholder
-            return Image.new('RGB', (800, 600), color='white')
+            logger.warning(f"Failed to render DataFrame with PIL: {e}")
+            # Return blank placeholder with error message
+            img = Image.new('RGB', (800, 600), color='white')
+            draw = ImageDraw.Draw(img)
+            draw.text((20, 20), f"Error rendering table: {title}", fill='red')
+            return img
 
     def supports_format(self, file_path: Path) -> bool:
         """Check if file is an Excel spreadsheet."""
