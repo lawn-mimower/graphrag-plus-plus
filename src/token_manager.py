@@ -180,23 +180,39 @@ class TokenManager:
         metadata: Dict
     ) -> List[Any]:
         """
-        Create Gemini API parts for a single page (IMAGE ONLY - Option D).
+        Create Gemini API parts for a single page (DocLens Interleaved Approach).
 
-        OCR text is included as supplementary context in the instruction prompt,
-        not inline with each page. This allows Gemini's vision to be the primary
-        processor, with OCR as backup reference.
+        DocLens Phase 1 Strategy:
+        - Text comes FIRST (PRIMARY source for entity values)
+        - Image comes SECOND (SECONDARY source for structure/layout)
+        - Both are sent inline per page (tight coupling prevents "Lost in the Middle")
+        - NO summarization - full text is preserved for maximum recall
 
         Args:
             page_img: PIL Image object
-            page_text: Extracted text from page (unused - in instruction instead)
+            page_text: Extracted text from page (PRIMARY content)
             metadata: Page metadata (page number, etc.)
 
         Returns:
-            List of parts [image_part]
+            List of parts [text_part, image_part] interleaved
         """
         parts = []
+        page_num = metadata.get('page_number', '?')
 
-        # Add image part (PRIMARY CONTENT)
+        # 1. Add TEXT FIRST (PRIMARY - ground truth for entity extraction)
+        if page_text and page_text.strip():
+            text_part = genai.types.Part(
+                text=f"\n--- Page {page_num} OCR Text (PRIMARY) ---\n{page_text}\n"
+            )
+            parts.append(text_part)
+        else:
+            # Even if no text, add a marker
+            text_part = genai.types.Part(
+                text=f"\n--- Page {page_num} OCR Text (PRIMARY) ---\n[No text extracted]\n"
+            )
+            parts.append(text_part)
+
+        # 2. Add IMAGE SECOND (SECONDARY - for structure/layout context)
         if page_img:
             # Convert PIL Image to bytes
             img_byte_arr = io.BytesIO()
@@ -211,9 +227,8 @@ class TokenManager:
             )
             parts.append(image_part)
 
-        # Note: Text is NOT included inline - it's in the instruction prompt
-        # This is Option D: Images primary, OCR as supplementary context
-
+        # DocLens Philosophy: Text-Image pairs stay together
+        # This prevents the model from having to "remember" text from 200k tokens ago
         return parts
 
     def should_chunk(self, contents: List[Any]) -> bool:

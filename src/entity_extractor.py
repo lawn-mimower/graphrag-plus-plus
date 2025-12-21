@@ -53,8 +53,8 @@ class MultimodalEntityExtractor:
         """
         logger.info(f"Extracting entities from {doc_name} ({len(page_pairs)} pages)")
 
-        # Build the instruction prompt with OCR context (Option D approach)
-        instruction_prompt = self._build_instruction_prompt_with_ocr_context(page_pairs)
+        # Build the instruction prompt (DocLens interleaved approach)
+        instruction_prompt = self._build_instruction_prompt()
 
         # Check if chunking is needed
         chunks = self.token_manager.chunk_multimodal_content(
@@ -84,74 +84,38 @@ class MultimodalEntityExtractor:
 
     def _build_instruction_prompt(self) -> str:
         """
-        Build the instruction prompt for entity extraction (basic version).
+        Build the instruction prompt for entity extraction.
+
+        DocLens Phase 1 Philosophy:
+        - Text is PRIMARY (ground truth for data/values)
+        - Images are SECONDARY (provide structure/layout context)
+        - Content is INTERLEAVED (text-image pairs, not separated)
+        - NO summarization (preserve all detail for recall)
 
         Returns:
-            Instruction prompt string
-        """
-        return Config.ENTITY_EXTRACTION_PROMPT_TEMPLATE
-
-    def _build_instruction_prompt_with_ocr_context(
-        self,
-        page_pairs: List[Tuple[Image.Image, str, Dict]]
-    ) -> str:
-        """
-        Build instruction prompt with OCR text as supplementary context (Option D).
-
-        Strategy: Send images as PRIMARY content, OCR text as REFERENCE context.
-        Gemini's vision handles tables, layouts, handwriting better than OCR.
-
-        Args:
-            page_pairs: List of (image, text, metadata) tuples
-
-        Returns:
-            Enhanced instruction prompt with OCR context
+            Instruction prompt string with DocLens guidance
         """
         base_prompt = Config.ENTITY_EXTRACTION_PROMPT_TEMPLATE
 
-        # Build OCR context summary
-        ocr_context = "\n\n" + "="*80 + "\n"
-        ocr_context += "SUPPLEMENTARY OCR TEXT (for reference - rely primarily on images):\n"
-        ocr_context += "="*80 + "\n\n"
+        # Add DocLens-specific guidance
+        doclens_guidance = """
 
-        has_low_quality_ocr = False
+**EXTRACTION STRATEGY (DocLens Phase 1):**
 
-        for img, text, metadata in page_pairs:
-            page_num = metadata.get('page_number', '?')
-            text_quality = metadata.get('text_quality', 1.0)
-            ocr_confidence = metadata.get('ocr_confidence', 1.0)
+For each page, you will see:
+1. **OCR Text (PRIMARY)** - Use this as your ground truth for all entity values, names, dates, numbers
+2. **Page Image (SECONDARY)** - Use this for understanding structure, layout, and spatial relationships
 
-            # Flag low quality OCR
-            if text_quality < Config.TEXT_QUALITY_THRESHOLD:
-                has_low_quality_ocr = True
-                quality_note = f" [LOW QUALITY OCR - confidence: {ocr_confidence:.2f}]"
-            else:
-                quality_note = ""
+**Critical Instructions:**
+- Extract entity VALUES (names, dates, IDs, amounts) from the OCR TEXT, not by reading the image
+- Use the IMAGE to understand context (e.g., is this a table? a form? what fields relate to each other?)
+- When OCR text quality is low, you may reference the image, but prefer text-based extraction
+- DO NOT summarize or skip entities - extract ALL relevant information with maximum recall
 
-            # Add page text with quality indicator
-            if text and text.strip():
-                ocr_context += f"--- Page {page_num}{quality_note} ---\n"
-                ocr_context += f"{text[:500]}...\n\n" if len(text) > 500 else f"{text}\n\n"
-            else:
-                ocr_context += f"--- Page {page_num} ---\n"
-                ocr_context += "[No text extracted - rely entirely on image]\n\n"
-
-        # Add vision-first instructions if OCR quality is low
-        if has_low_quality_ocr:
-            vision_note = """
-**IMPORTANT**: Some pages have low-quality OCR. Please PRIORITIZE the visual
-information in the images over the OCR text. The OCR is provided only as a
-supplementary reference and may contain errors.
+This approach prevents hallucination and ensures accurate entity extraction.
 """
-            ocr_context += "\n" + vision_note
 
-        # Combine base prompt with OCR context
-        full_prompt = base_prompt + ocr_context
-
-        logger.debug(
-            f"Built instruction prompt with OCR context for {len(page_pairs)} pages "
-            f"(low quality: {has_low_quality_ocr})"
-        )
+        full_prompt = base_prompt + doclens_guidance
 
         return full_prompt
 
