@@ -12,7 +12,7 @@ from datetime import datetime
 from google import genai
 
 from src.config import Config
-from src.mineru_parser import MinervParser
+from src.rapidocr_parser import RapidOCRParser
 from src.entity_extractor import MultimodalEntityExtractor
 from src.token_manager import TokenManager
 from src.kg_builder import KnowledgeGraphBuilder
@@ -41,7 +41,7 @@ class BenchmarkHarness:
         # Initialize components
         logger.info("Initializing components...")
 
-        self.parser = MinervParser()
+        self.parser = RapidOCRParser()
 
         self.client = genai.Client(api_key=Config.GOOGLE_API_KEY)
         self.token_manager = TokenManager(self.client)
@@ -79,16 +79,23 @@ class BenchmarkHarness:
 
         start_time = time.time()
 
-        # Get list of PDF files
-        pdf_files = list(dataset_path.glob("*.pdf"))
-        if not pdf_files:
-            raise ValueError(f"No PDF files found in {dataset_path}")
+        # Get list of supported document files
+        document_files = []
+        for ext in Config.SUPPORTED_FORMATS:
+            document_files.extend(dataset_path.glob(f"*{ext}"))
 
-        logger.info(f"Found {len(pdf_files)} PDF files to process")
+        if not document_files:
+            raise ValueError(
+                f"No supported documents found in {dataset_path}. "
+                f"Supported formats: {Config.SUPPORTED_FORMATS}"
+            )
+
+        logger.info(f"Found {len(document_files)} document(s) to process")
+        logger.info(f"Supported formats: {Config.SUPPORTED_FORMATS}")
 
         # Step 1-3: Process each file iteratively
         logger.info("\n[STEP 1-3] Processing files iteratively (parse -> extract -> add to KG)...")
-        self._process_files_iteratively(pdf_files)
+        self._process_files_iteratively(document_files)
 
         # Step 4: Save non-deduplicated graph
         logger.info("\n[STEP 4] Saving non-deduplicated knowledge graph...")
@@ -112,38 +119,38 @@ class BenchmarkHarness:
         logger.info(f"BENCHMARK COMPLETED in {total_time:.2f} seconds")
         logger.info("=" * 80)
 
-    def _process_files_iteratively(self, pdf_files: List[Path]):
+    def _process_files_iteratively(self, document_files: List[Path]):
         """
-        Process PDF files one at a time to avoid memory overflow.
+        Process document files one at a time to avoid memory overflow.
         For each file: parse -> extract entities -> add to KG -> cleanup.
 
         Args:
-            pdf_files: List of PDF file paths to process
+            document_files: List of document file paths to process
         """
         import gc
 
-        for idx, pdf_path in enumerate(pdf_files, 1):
+        for idx, doc_path in enumerate(document_files, 1):
             logger.info(f"\n{'='*60}")
-            logger.info(f"Processing file {idx}/{len(pdf_files)}: {pdf_path.name}")
+            logger.info(f"Processing file {idx}/{len(document_files)}: {doc_path.name}")
             logger.info(f"{'='*60}")
 
             try:
-                # Step 1: Parse this PDF
-                logger.info(f"[1/3] Parsing {pdf_path.name}...")
-                page_pairs = self.parser.parse_pdf(pdf_path)
+                # Step 1: Parse this document (universal parser handles all formats)
+                logger.info(f"[1/3] Parsing {doc_path.name}...")
+                page_pairs = self.parser.parse(doc_path)
                 logger.info(f"  → Extracted {len(page_pairs)} pages")
 
                 if not page_pairs:
-                    logger.warning(f"  → No pages extracted from {pdf_path.name}, skipping")
+                    logger.warning(f"  → No pages extracted from {doc_path.name}, skipping")
                     continue
 
-                # Step 2: Extract entities from this PDF
-                logger.info(f"[2/3] Extracting entities from {pdf_path.name}...")
-                save_path = Config.ENTITIES_EXTRACTED_DIR / f"{pdf_path.stem}_entities.json"
+                # Step 2: Extract entities from this document
+                logger.info(f"[2/3] Extracting entities from {doc_path.name}...")
+                save_path = Config.ENTITIES_EXTRACTED_DIR / f"{doc_path.stem}_entities.json"
 
                 result = self.entity_extractor.extract_entities(
                     page_pairs,
-                    pdf_path.stem,
+                    doc_path.stem,
                     save_path
                 )
 
@@ -168,7 +175,7 @@ class BenchmarkHarness:
                     self.kg_builder.add_entities(
                         entities,
                         relationships,
-                        source_doc=pdf_path.stem,
+                        source_doc=doc_path.stem,
                         page_numbers=page_numbers if page_numbers else None
                     )
 
@@ -181,10 +188,10 @@ class BenchmarkHarness:
                 del relationships
                 gc.collect()
 
-                logger.info(f"✓ Completed processing {pdf_path.name}")
+                logger.info(f"✓ Completed processing {doc_path.name}")
 
             except Exception as e:
-                logger.error(f"Failed to process {pdf_path.name}: {e}", exc_info=True)
+                logger.error(f"Failed to process {doc_path.name}: {e}", exc_info=True)
                 continue
 
         # Print final KG statistics

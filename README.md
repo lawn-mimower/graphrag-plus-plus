@@ -24,7 +24,7 @@ Production-ready entity resolution system for financial documents with 5 dedupli
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ FULL PIPELINE (main.py)                                     │
-│ PDF Files → Mineru Parser → Entity Extractor → KG Builder  │
+│ PDF Files → PyMuPDF → Entity Extractor → KG Builder  │
 │                                   ↓                          │
 │                        Non-Deduplicated KG                   │
 │                                   ↓                          │

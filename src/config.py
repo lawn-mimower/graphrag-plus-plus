@@ -48,18 +48,36 @@ class Config:
 
     # Output directories
     OUTPUTS_DIR = PROJECT_ROOT / "outputs"
-    MINERU_PARSED_DIR = OUTPUTS_DIR / "mineru_parsed"
+    PARSED_DOCS_DIR = OUTPUTS_DIR / "parsed_documents"
     ENTITIES_EXTRACTED_DIR = OUTPUTS_DIR / "entities_extracted"
     KNOWLEDGE_GRAPHS_DIR = OUTPUTS_DIR / "knowledge_graphs"
     REASONING_DIR = OUTPUTS_DIR / "reasoning"
 
     # Ensure output directories exist
-    for dir_path in [OUTPUTS_DIR, MINERU_PARSED_DIR, ENTITIES_EXTRACTED_DIR, KNOWLEDGE_GRAPHS_DIR, REASONING_DIR]:
+    for dir_path in [OUTPUTS_DIR, PARSED_DOCS_DIR, ENTITIES_EXTRACTED_DIR, KNOWLEDGE_GRAPHS_DIR, REASONING_DIR]:
         dir_path.mkdir(parents=True, exist_ok=True)
 
-    # ==================== Mineru Configuration ====================
-    MINERU_USE_GPU = True  # User confirmed CUDA available
-    MINERU_DPI = 300  # High-quality image extraction
+    # ==================== Document Parsing Configuration ====================
+    # Supported document formats
+    SUPPORTED_FORMATS = ['.pdf', '.jpg', '.jpeg', '.png', '.tiff', '.docx', '.xlsx']
+
+    # Image rendering DPI for PDFs and documents
+    RENDER_DPI = 300
+
+    # ==================== RapidOCR Configuration ====================
+    # OCR Language support (list of language codes)
+    # Common: 'en' (English), 'ch' (Chinese), 'japan', 'korean', 'ta' (Tamil), 'te' (Telugu), 'ka' (Kannada)
+    RAPIDOCR_LANGUAGES = ['en', 'ch']  # Multi-language support
+
+    # Use GPU for OCR if available (via ONNX Runtime)
+    RAPIDOCR_USE_GPU = True
+
+    # OCR confidence threshold (0.0-1.0)
+    OCR_CONFIDENCE_THRESHOLD = 0.7
+
+    # Text quality assessment threshold (0.0-1.0)
+    # Below this, flag as low-quality OCR
+    TEXT_QUALITY_THRESHOLD = 0.6
 
     # ==================== Deduplication Thresholds ====================
     # R-Swoosh

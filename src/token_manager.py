@@ -180,19 +180,23 @@ class TokenManager:
         metadata: Dict
     ) -> List[Any]:
         """
-        Create Gemini API parts for a single page (image + text).
+        Create Gemini API parts for a single page (IMAGE ONLY - Option D).
+
+        OCR text is included as supplementary context in the instruction prompt,
+        not inline with each page. This allows Gemini's vision to be the primary
+        processor, with OCR as backup reference.
 
         Args:
             page_img: PIL Image object
-            page_text: Extracted text from page
+            page_text: Extracted text from page (unused - in instruction instead)
             metadata: Page metadata (page number, etc.)
 
         Returns:
-            List of parts [image_part, text_part]
+            List of parts [image_part]
         """
         parts = []
 
-        # Add image part
+        # Add image part (PRIMARY CONTENT)
         if page_img:
             # Convert PIL Image to bytes
             img_byte_arr = io.BytesIO()
@@ -207,12 +211,8 @@ class TokenManager:
             )
             parts.append(image_part)
 
-        # Add text part with page context
-        page_num = metadata.get('page_number', 'unknown')
-        text_part = genai.types.Part(
-            text=f"\n--- PAGE {page_num} ---\nTEXT FROM PAGE: {page_text}\n"
-        )
-        parts.append(text_part)
+        # Note: Text is NOT included inline - it's in the instruction prompt
+        # This is Option D: Images primary, OCR as supplementary context
 
         return parts
 
