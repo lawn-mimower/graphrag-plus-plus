@@ -871,7 +871,7 @@ result = orchestrator.process_query(
 
 ```python
 from src.leiden_builder import LeidenCommunityBuilder
-
+￼Filtering based on entity access, documents, relationships
 builder = LeidenCommunityBuilder()
 stats = builder.build_communities()
 ```
