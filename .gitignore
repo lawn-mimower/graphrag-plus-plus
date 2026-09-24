@@ -24,16 +24,19 @@ wheels/
 venv/
 ENV/
 env/
-.venv
+.venv/
 
 # Environment Variables
 .env
 
-# Outputs
+# Outputs and local data
 outputs/
+dataset/
+mini_graphs/
 *.gpickle
 *.graphml
 *.db
+*.db-journal
 
 # Logs
 *.log
@@ -58,7 +61,7 @@ milvus_lite.db
 # Mineru temporary files
 mineru_temp/
 
-# Test files
-test_*.py
-*_test.py
-tests/
+# Test caches
+.pytest_cache/
+.coverage
+htmlcov/
