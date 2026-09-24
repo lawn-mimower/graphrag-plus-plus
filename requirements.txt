@@ -16,11 +16,16 @@ Pillow>=10.0.0
 
 # Knowledge Graph
 networkx>=3.0
+# Leiden community detection
+leidenalg>=0.10.0
+python-igraph>=0.11.0
 # matplotlib>=3.7.0  # Now optional - Excel rendering uses PIL instead
 
 # Deduplication Libraries
-# Splink for probabilistic matching
-splink>=3.9.0
+# Splink for probabilistic matching (code uses the Splink 3 DuckDBLinker API)
+splink>=3.9.0,<4.0
+# Splink 3 is not compatible with recent sqlglot releases
+sqlglot>=13.0.0,<26.0
 # For fuzzy string matching
 python-Levenshtein>=0.21.0
 fuzzywuzzy>=0.18.0
@@ -32,9 +37,9 @@ torch>=2.0.0
 torchvision>=0.15.0
 transformers>=4.30.0
 
-# Vector Database (Milvus-lite)
-pymilvus>=2.3.0
-# Note: Milvus-lite is included in pymilvus, no separate installation needed
+# Vector Database (Milvus Lite: local file, no server needed; Linux/macOS)
+pymilvus>=2.4.2
+milvus-lite>=2.4.0
 
 # Scientific Computing
 numpy>=1.24.0
