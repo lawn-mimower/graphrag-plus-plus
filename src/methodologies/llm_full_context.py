@@ -28,7 +28,7 @@ class LLMFullContextDeduplicator:
             client: Google GenAI client
         """
         self.client = client or genai.Client(api_key=Config.GOOGLE_API_KEY)
-        self.model_name = "gemini-2.5-pro"  # Use Pro model for complex reasoning
+        self.model_name = Config.MODEL_DEDUP  # Pro model by default for complex reasoning
 
     def deduplicate(self, graph: nx.DiGraph) -> List[Set[str]]:
         """

@@ -16,19 +16,19 @@ class Config:
     """Central configuration class for the benchmarking suite."""
 
     # ==================== API Configuration ====================
+    # Only the Gemini-backed stages (extraction, LLM dedup, summaries, query
+    # planning) need the key; the google-genai client raises if it is missing.
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-    if not GOOGLE_API_KEY:
-        raise ValueError(
-            "GOOGLE_API_KEY not found in environment. "
-            "Please create a .env file with your API key."
-        )
 
     # ==================== Model Configuration ====================
     # Heavy logic (extraction, reasoning, agentic adjudication)
-    MODEL_HEAVY = "gemini-2.5-flash"
+    MODEL_HEAVY = os.getenv("GEMINI_MODEL_HEAVY", "gemini-2.5-flash")
 
     # Light/comparison tasks
-    MODEL_LIGHT = "gemini-2.5-flash-lite"
+    MODEL_LIGHT = os.getenv("GEMINI_MODEL_LIGHT", "gemini-2.5-flash-lite")
+
+    # Full-context LLM deduplication
+    MODEL_DEDUP = os.getenv("GEMINI_MODEL_DEDUP", "gemini-2.5-pro")
 
     #Quickest Summariser
     MODEL_FEATHER = "gemini-2.0-flash-lite"
@@ -81,16 +81,16 @@ class Config:
 
     # ==================== Deduplication Thresholds ====================
     # R-Swoosh
-    RSWOOSH_SIMILARITY_THRESHOLD = 0.85
+    RSWOOSH_SIMILARITY_THRESHOLD = float(os.getenv("RSWOOSH_SIMILARITY_THRESHOLD", "0.85"))
 
     # Probabilistic (Splink)
-    SPLINK_MATCH_PROBABILITY_THRESHOLD = 0.8
+    SPLINK_MATCH_PROBABILITY_THRESHOLD = float(os.getenv("SPLINK_MATCH_PROBABILITY_THRESHOLD", "0.8"))
 
     # Topological (NetworkX Jaccard)
-    TOPOLOGICAL_JACCARD_THRESHOLD = 0.7
+    TOPOLOGICAL_JACCARD_THRESHOLD = float(os.getenv("TOPOLOGICAL_JACCARD_THRESHOLD", "0.7"))
 
     # Semantic (Embeddings)
-    SEMANTIC_SIMILARITY_THRESHOLD = 0.9
+    SEMANTIC_SIMILARITY_THRESHOLD = float(os.getenv("SEMANTIC_SIMILARITY_THRESHOLD", "0.9"))
     SEMANTIC_EMBEDDING_MODEL = "sentence-transformers/all-mpnet-base-v2"  # High accuracy
 
     # Agentic LLM
@@ -143,7 +143,7 @@ Now process the following pages:
 """
 
     # ==================== Logging Configuration ====================
-    LOG_LEVEL = "INFO"
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
     LOG_FILE = OUTPUTS_DIR / "benchmark.log"
 
     # ==================== Benchmark Configuration ====================
@@ -169,7 +169,8 @@ Now process the following pages:
         print(f"Max Tokens: {cls.MAX_TOKENS_PER_REQUEST:,}")
         print(f"Dataset: {cls.DATASET_DIR}")
         print(f"Outputs: {cls.OUTPUTS_DIR}")
-        print(f"Mineru GPU: {cls.MINERU_USE_GPU}")
+        print(f"Model (Dedup): {cls.MODEL_DEDUP}")
+        print(f"API key set: {bool(cls.GOOGLE_API_KEY)}")
         print(f"Embedding Model: {cls.SEMANTIC_EMBEDDING_MODEL}")
         print("=" * 80)
 
