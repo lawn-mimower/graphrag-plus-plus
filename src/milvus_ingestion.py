@@ -265,9 +265,9 @@ class MilvusIngestionEngine:
         # Filter by similarity threshold and format results
         matches = []
         for hit in results[0]:
-            # For COSINE metric, distance = 1 - cosine_similarity
-            # So similarity = 1 - distance
-            similarity = 1 - hit['distance']
+            # For the COSINE metric Milvus returns the cosine similarity itself
+            # in the 'distance' field (1.0 = identical), not 1 - similarity
+            similarity = hit['distance']
 
             if similarity >= similarity_threshold:
                 matches.append({

@@ -169,7 +169,7 @@ class SemanticDeduplicator:
         logger.info("Storing embeddings in Milvus-lite...")
 
         # Initialize Milvus client (using local file)
-        self.milvus_client = MilvusClient("./outputs/milvus_lite.db")
+        self.milvus_client = MilvusClient(str(Config.OUTPUTS_DIR / "milvus_lite.db"))
 
         # Drop collection if exists
         if self.milvus_client.has_collection(self.collection_name):
@@ -239,9 +239,9 @@ class SemanticDeduplicator:
                 similar_node_id = hit['entity']['node_id']
                 distance = hit['distance']
 
-                # Convert distance to similarity (Milvus returns distance, not similarity for COSINE)
-                # For COSINE metric in Milvus, distance = 1 - cosine_similarity
-                similarity = 1 - distance
+                # For the COSINE metric Milvus returns the cosine similarity itself
+                # in the 'distance' field (1.0 = identical), not 1 - similarity
+                similarity = distance
 
                 if similarity >= self.threshold and similar_node_id != node_id:
                     similarity_graph.add_edge(node_id, similar_node_id, weight=similarity)
