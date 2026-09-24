@@ -77,8 +77,8 @@ Examples:
         '--log-level',
         type=str,
         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
-        default='INFO',
-        help='Logging level (default: INFO)'
+        default=None,
+        help='Logging level (default: LOG_LEVEL env var or INFO)'
     )
 
     return parser.parse_args()
@@ -115,14 +115,20 @@ def main():
         logger.error(f"Dataset path is not a directory: {dataset_path}")
         return 1
 
-    # Check for PDF files
-    pdf_files = list(dataset_path.glob("*.pdf"))
-    if not pdf_files:
-        logger.error(f"No PDF files found in {dataset_path}")
+    # Check for supported documents (PDF, images, DOCX, XLSX)
+    doc_files = [
+        f for f in dataset_path.iterdir()
+        if f.is_file() and f.suffix.lower() in Config.SUPPORTED_FORMATS
+    ]
+    if not doc_files:
+        logger.error(
+            f"No supported documents found in {dataset_path} "
+            f"(supported: {', '.join(Config.SUPPORTED_FORMATS)})"
+        )
         return 1
 
     logger.info(f"Dataset: {dataset_path}")
-    logger.info(f"Found {len(pdf_files)} PDF files")
+    logger.info(f"Found {len(doc_files)} document(s)")
 
     # Create and run benchmark harness
     try:
