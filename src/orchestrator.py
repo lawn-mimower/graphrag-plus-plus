@@ -62,12 +62,17 @@ class QueryOrchestrator:
         user_query: str,
         user_tags: List[str],
         max_depth: int = 2,
-        similarity_threshold: float = 0.7,
+        similarity_threshold: float = 0.1,
         max_candidates_per_entity: int = 5,
         max_type_results: int = 20
     ) -> Dict[str, Any]:
         """
         Process a natural language query using the retrieve-then-reason pipeline.
+
+        similarity_threshold is a cosine similarity. Entities are embedded from
+        their full SQL record, so short name queries typically score 0.1-0.3
+        against the right entity; results are ranked, the threshold only drops
+        clearly unrelated hits.
         """
         logger.info("=" * 80)
         logger.info(f"Processing query: {user_query}")
@@ -80,7 +85,7 @@ class QueryOrchestrator:
             pre_fetched_candidates = self.milvus_engine.search_similar_entities(
                 query_text=user_query,
                 top_k=10, # Fetch a broad set of initial candidates
-                similarity_threshold=similarity_threshold - 0.1 # Use a slightly lower threshold for broad phase
+                similarity_threshold=max(similarity_threshold - 0.1, 0.0) # Use a slightly lower threshold for broad phase
             )
             logger.info(f"Found {len(pre_fetched_candidates)} initial candidates via semantic search.")
 

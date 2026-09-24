@@ -103,7 +103,7 @@ orchestrator.close()
   - Relationship types (e.g., "WORKS_FOR")
 
 #### **Step 2: Candidate Resolution**
-- **Named Entities:** Milvus vector search (semantic similarity > 0.7)
+- **Named Entities:** Milvus vector search (cosine similarity >= `similarity_threshold`, default 0.1; results are ranked)
 - **Entity Types:** SQL query for all entities of that type
 - Returns consolidated list of candidate IDs
 
@@ -190,7 +190,7 @@ result = orchestrator.process_query(
     user_query="...",
     user_tags=["UNCLASSIFIED"],
     max_depth=3,  # Increase for deeper graph traversal
-    similarity_threshold=0.8,  # Higher = stricter matching
+    similarity_threshold=0.2,  # Cosine similarity; higher = stricter matching
     max_candidates_per_entity=10,  # More candidates per entity
     max_type_results=50  # More entities per type
 )

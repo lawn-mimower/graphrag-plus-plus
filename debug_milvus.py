@@ -62,7 +62,7 @@ if __name__ == "__main__":
     # Parameters for the search
     # Using a low threshold to catch any potential match
     search_top_k = 20
-    search_threshold = 0.5 
+    search_threshold = 0.1
 
     print(f"Starting Milvus debug search for query: '{search_query}'")
     query_milvus(
