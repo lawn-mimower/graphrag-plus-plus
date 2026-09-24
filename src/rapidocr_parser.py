@@ -453,11 +453,8 @@ class XLSXParser(DocumentParser):
 
         try:
             import pandas as pd
-            import matplotlib.pyplot as plt
-            import matplotlib
-            matplotlib.use('Agg')  # Non-interactive backend
         except ImportError:
-            logger.error("pandas/matplotlib not installed. Install with: pip install pandas matplotlib")
+            logger.error("pandas not installed. Install with: pip install pandas openpyxl")
             return []
 
         try:
