@@ -1,0 +1,718 @@
+{
+  "run_name": "gemini-3.5-flash-lite",
+  "status": "subset",
+  "message": null,
+  "updated": "2026-09-25",
+  "resume_command": "python benchmarks/run_benchmark.py --run-name gemini-3.5-flash-lite --tasks er,qa --index-model gemini:gemini-3.5-flash-lite --plan-model gemini:gemini-3.5-flash-lite --answer-model gemini:gemini-3.5-flash-lite --max-live-calls 40 --min-interval 10 --gemini-attempts 1 --resume",
+  "conditions": {
+    "index_model": "gemini:gemini-3.5-flash-lite",
+    "plan_model": "gemini:gemini-3.5-flash-lite",
+    "answer_model": "gemini:gemini-3.5-flash-lite",
+    "er_llm_model": "gemini:gemini-3.5-flash-lite",
+    "answer_prompt": "You answer questions about a small set of company documents: annual reports, board minutes, schedules and letters. Use only the context below.\n\nContext:\n{context}\n\nQuestion: {question}\n\nReply with the answer only, without explanation: a name, a list of names separated by semicolons, a number, or Yes/No. For a question of the form \"How is X connected to Y?\", name the entity or entities that link them. If the context does not contain the answer, reply \"Not found\".\nAnswer:",
+    "answer_temperature": 0.0,
+    "answer_max_output_tokens": 2048,
+    "pipeline_temperatures": "0.1 for extraction, LLM dedup and query planning (set in src/)",
+    "ollama": null,
+    "gemini_min_interval_s": 10.0,
+    "max_live_calls": 9,
+    "systems": [
+      "graphrag",
+      "rag",
+      "full_context"
+    ],
+    "graphrag_graphs": [
+      "llm_full_context"
+    ],
+    "graphrag_extraction": "LLM",
+    "graphrag_max_depth": 2,
+    "user_tags": [
+      "UNCLASSIFIED"
+    ],
+    "rag": {
+      "chunk_words": 100,
+      "chunk_overlap": 20,
+      "top_k": 5,
+      "retriever": "dense, sentence-transformers/all-mpnet-base-v2, cosine"
+    },
+    "platform": {
+      "python": "3.12.12",
+      "machine": "x86_64",
+      "packages": {
+        "google-genai": "1.57.0",
+        "sentence-transformers": "6.1.0",
+        "pymilvus": "2.6.11",
+        "milvus-lite": "2.5.1",
+        "splink": "3.9.15",
+        "rapidfuzz": "3.14.3",
+        "torch": "2.5.1+cu121"
+      }
+    },
+    "hardware_note": "CPU only; the machine was shared with other jobs, so latencies are noisy."
+  },
+  "corpus": {
+    "documents": 8,
+    "entities": 20,
+    "gold_mentions": 66,
+    "questions": 39
+  },
+  "er_gold_mentions": {
+    "llm_model": "gemini:gemini-3.5-flash-lite",
+    "mentions": 66,
+    "entities": 20,
+    "scores": {
+      "rswoosh": {
+        "precision": 1.0,
+        "recall": 0.667,
+        "f1": 0.8,
+        "purity": 1.0,
+        "inverse_purity": 0.788,
+        "predicted_pairs": 68,
+        "gold_pairs": 102,
+        "true_pairs": 68,
+        "predicted_clusters": 33,
+        "gold_clusters": 20,
+        "mentions": 66,
+        "seconds": 0.0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "probabilistic": {
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "purity": 1.0,
+        "inverse_purity": 0.303,
+        "predicted_pairs": 0,
+        "gold_pairs": 102,
+        "true_pairs": 0,
+        "predicted_clusters": 66,
+        "gold_clusters": 20,
+        "mentions": 66,
+        "seconds": 2.3,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "topological": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "purity": 0.758,
+        "inverse_purity": 0.303,
+        "predicted_pairs": 25,
+        "gold_pairs": 102,
+        "true_pairs": 0,
+        "predicted_clusters": 50,
+        "gold_clusters": 20,
+        "mentions": 66,
+        "seconds": 0.0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "semantic": {
+        "precision": 0.593,
+        "recall": 0.657,
+        "f1": 0.623,
+        "purity": 0.848,
+        "inverse_purity": 0.833,
+        "predicted_pairs": 113,
+        "gold_pairs": 102,
+        "true_pairs": 67,
+        "predicted_clusters": 24,
+        "gold_clusters": 20,
+        "mentions": 66,
+        "seconds": 18.7,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "llm_full_context": {
+        "precision": 0.956,
+        "recall": 0.853,
+        "f1": 0.902,
+        "purity": 0.985,
+        "inverse_purity": 0.939,
+        "predicted_pairs": 91,
+        "gold_pairs": 102,
+        "true_pairs": 87,
+        "predicted_clusters": 23,
+        "gold_clusters": 20,
+        "mentions": 66,
+        "seconds": 22.3,
+        "llm_calls": 1,
+        "input_tokens": 14796,
+        "output_tokens": 3013
+      },
+      "exact_normalised": {
+        "precision": 1.0,
+        "recall": 0.716,
+        "f1": 0.834,
+        "purity": 1.0,
+        "inverse_purity": 0.833,
+        "predicted_pairs": 73,
+        "gold_pairs": 102,
+        "true_pairs": 73,
+        "predicted_clusters": 30,
+        "gold_clusters": 20,
+        "mentions": 66,
+        "seconds": 0.0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "fuzzy_token_sort_90": {
+        "precision": 0.895,
+        "recall": 0.833,
+        "f1": 0.863,
+        "purity": 0.97,
+        "inverse_purity": 0.894,
+        "predicted_pairs": 95,
+        "gold_pairs": 102,
+        "true_pairs": 85,
+        "predicted_clusters": 26,
+        "gold_clusters": 20,
+        "mentions": 66,
+        "seconds": 0.0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      }
+    }
+  },
+  "er_extracted_mentions": {
+    "extracted_nodes": 55,
+    "aligned_nodes": 53,
+    "entities_covered": 20,
+    "scores": {
+      "rswoosh": {
+        "precision": 1.0,
+        "recall": 0.683,
+        "f1": 0.811,
+        "purity": 1.0,
+        "inverse_purity": 0.755,
+        "predicted_pairs": 43,
+        "gold_pairs": 63,
+        "true_pairs": 43,
+        "predicted_clusters": 33,
+        "gold_clusters": 20,
+        "mentions": 53,
+        "seconds": 0.0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "probabilistic": {
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "purity": 1.0,
+        "inverse_purity": 0.377,
+        "predicted_pairs": 0,
+        "gold_pairs": 63,
+        "true_pairs": 0,
+        "predicted_clusters": 53,
+        "gold_clusters": 20,
+        "mentions": 53,
+        "seconds": 2.6,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "topological": {
+        "precision": 0.077,
+        "recall": 0.016,
+        "f1": 0.026,
+        "purity": 0.849,
+        "inverse_purity": 0.396,
+        "predicted_pairs": 13,
+        "gold_pairs": 63,
+        "true_pairs": 1,
+        "predicted_clusters": 44,
+        "gold_clusters": 20,
+        "mentions": 53,
+        "seconds": 0.0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "semantic": {
+        "precision": 0.686,
+        "recall": 0.381,
+        "f1": 0.49,
+        "purity": 0.943,
+        "inverse_purity": 0.679,
+        "predicted_pairs": 35,
+        "gold_pairs": 63,
+        "true_pairs": 24,
+        "predicted_clusters": 35,
+        "gold_clusters": 20,
+        "mentions": 53,
+        "seconds": 4.9,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "llm_full_context": {
+        "precision": 0.778,
+        "recall": 0.667,
+        "f1": 0.718,
+        "purity": 0.906,
+        "inverse_purity": 0.849,
+        "predicted_pairs": 54,
+        "gold_pairs": 63,
+        "true_pairs": 42,
+        "predicted_clusters": 23,
+        "gold_clusters": 20,
+        "mentions": 53,
+        "seconds": 11.4,
+        "llm_calls": 1,
+        "input_tokens": 12011,
+        "output_tokens": 2783
+      },
+      "exact_normalised": {
+        "precision": 1.0,
+        "recall": 0.698,
+        "f1": 0.822,
+        "purity": 1.0,
+        "inverse_purity": 0.811,
+        "predicted_pairs": 44,
+        "gold_pairs": 63,
+        "true_pairs": 44,
+        "predicted_clusters": 29,
+        "gold_clusters": 20,
+        "mentions": 53,
+        "seconds": 0.0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "fuzzy_token_sort_90": {
+        "precision": 0.93,
+        "recall": 0.841,
+        "f1": 0.883,
+        "purity": 0.981,
+        "inverse_purity": 0.887,
+        "predicted_pairs": 57,
+        "gold_pairs": 63,
+        "true_pairs": 53,
+        "predicted_clusters": 25,
+        "gold_clusters": 20,
+        "mentions": 53,
+        "seconds": 0.0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0
+      }
+    }
+  },
+  "qa": {
+    "questions_planned": 8,
+    "questions_scored": 8,
+    "question_ids": [
+      "Q01",
+      "Q09",
+      "Q15",
+      "Q19",
+      "Q27",
+      "Q34",
+      "Q02",
+      "Q10"
+    ],
+    "systems": {
+      "graphrag:llm_full_context": {
+        "n": 8,
+        "score": 0.625,
+        "lenient_correct": 0.625,
+        "exact_match": 0.625,
+        "entity_f1": 0.8,
+        "abstained": 3,
+        "by_type": {
+          "attribute": {
+            "n": 2,
+            "score": 0.5
+          },
+          "cross_doc": {
+            "n": 1,
+            "score": 1.0
+          },
+          "list": {
+            "n": 1,
+            "score": 1.0
+          },
+          "lookup": {
+            "n": 2,
+            "score": 0.5
+          },
+          "multi_hop": {
+            "n": 1,
+            "score": 1.0
+          },
+          "yes_no": {
+            "n": 1,
+            "score": 0.0
+          }
+        },
+        "by_min_documents": {
+          "1": {
+            "n": 7,
+            "score": 0.571
+          },
+          "2": {
+            "n": 1,
+            "score": 1.0
+          }
+        },
+        "answer_in_context": 0.857,
+        "evidence_recall": 0.875,
+        "mean_context_chars": 3059,
+        "llm_calls": 15,
+        "mean_input_tokens": 2163,
+        "mean_output_tokens": 92,
+        "mean_latency_s": 23.9,
+        "median_latency_s": 24.8,
+        "graph": {
+          "status": {
+            "success": 8
+          },
+          "laser_plans": 3,
+          "answer_entities_in_subgraph": 1.0,
+          "path_hit": 0.857,
+          "evidence_recall": 0.875,
+          "mean_nodes": 15,
+          "answer_calls_skipped": 1
+        }
+      },
+      "rag": {
+        "n": 8,
+        "score": 0.75,
+        "lenient_correct": 0.75,
+        "exact_match": 0.75,
+        "entity_f1": 0.6,
+        "abstained": 1,
+        "by_type": {
+          "attribute": {
+            "n": 2,
+            "score": 1.0
+          },
+          "cross_doc": {
+            "n": 1,
+            "score": 0.0
+          },
+          "list": {
+            "n": 1,
+            "score": 1.0
+          },
+          "lookup": {
+            "n": 2,
+            "score": 1.0
+          },
+          "multi_hop": {
+            "n": 1,
+            "score": 0.0
+          },
+          "yes_no": {
+            "n": 1,
+            "score": 1.0
+          }
+        },
+        "by_min_documents": {
+          "1": {
+            "n": 7,
+            "score": 0.857
+          },
+          "2": {
+            "n": 1,
+            "score": 0.0
+          }
+        },
+        "answer_in_context": 1.0,
+        "evidence_recall": 1.0,
+        "mean_context_chars": 3267,
+        "llm_calls": 8,
+        "mean_input_tokens": 977,
+        "mean_output_tokens": 6,
+        "mean_latency_s": 13.7,
+        "median_latency_s": 15.5,
+        "bm25_same_k": {
+          "answer_in_context": 1.0,
+          "evidence_recall": 1.0
+        }
+      },
+      "full_context": {
+        "n": 8,
+        "score": 1.0,
+        "lenient_correct": 1.0,
+        "exact_match": 1.0,
+        "entity_f1": 1.0,
+        "abstained": 0,
+        "by_type": {
+          "attribute": {
+            "n": 2,
+            "score": 1.0
+          },
+          "cross_doc": {
+            "n": 1,
+            "score": 1.0
+          },
+          "list": {
+            "n": 1,
+            "score": 1.0
+          },
+          "lookup": {
+            "n": 2,
+            "score": 1.0
+          },
+          "multi_hop": {
+            "n": 1,
+            "score": 1.0
+          },
+          "yes_no": {
+            "n": 1,
+            "score": 1.0
+          }
+        },
+        "by_min_documents": {
+          "1": {
+            "n": 7,
+            "score": 1.0
+          },
+          "2": {
+            "n": 1,
+            "score": 1.0
+          }
+        },
+        "answer_in_context": 1.0,
+        "evidence_recall": 1.0,
+        "mean_context_chars": 8339,
+        "llm_calls": 8,
+        "mean_input_tokens": 2377,
+        "mean_output_tokens": 6,
+        "mean_latency_s": 12.8,
+        "median_latency_s": 12.7
+      }
+    },
+    "per_question": [
+      {
+        "id": "Q01",
+        "type": "lookup",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Mr. Arjun Mehta",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Mr. Arjun Mehta",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q09",
+        "type": "attribute",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "08220202",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "08220202",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q15",
+        "type": "yes_no",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "No",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "No",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q19",
+        "type": "multi_hop",
+        "graphrag:llm_full_context": {
+          "answer": "Harbourline Logistics Pvt Ltd",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Bluefin Traders Private Limited",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "Harbourline Logistics Private Limited",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q27",
+        "type": "cross_doc",
+        "graphrag:llm_full_context": {
+          "answer": "Arjun Mehta",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "Arjun Mehta",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q34",
+        "type": "list",
+        "graphrag:llm_full_context": {
+          "answer": "Arjun Mehta; M. Iyer; R. Pillai; L. Narayan",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Mr. Arjun Mehta; Ms. Meera Iyer; Mr. Rohan Pillai; Ms. Leela Narayan",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Mr. Arjun Mehta; Ms. Meera Iyer; Mr. Rohan Pillai; Ms. Leela Narayan",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q02",
+        "type": "lookup",
+        "graphrag:llm_full_context": {
+          "answer": "S. Joshi",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Mr. Sameer Joshi",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Sameer Joshi",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q10",
+        "type": "attribute",
+        "graphrag:llm_full_context": {
+          "answer": "62%",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "62%",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "62%",
+          "score": 1.0
+        }
+      }
+    ]
+  },
+  "indexing": {
+    "graphrag": {
+      "extraction": {
+        "llm_calls": 8,
+        "input_tokens": 18577,
+        "output_tokens": 9351,
+        "llm_latency_s": 63.7,
+        "per_document": {
+          "larkspur_annual_report_fy2025": {
+            "entities": 0,
+            "relationships": 0
+          },
+          "larkspur_board_minutes_jul2025": {
+            "entities": 12,
+            "relationships": 8
+          },
+          "larkspur_related_parties_fy2025": {
+            "entities": 13,
+            "relationships": 11
+          },
+          "harbourline_annual_report_fy2025": {
+            "entities": 7,
+            "relationships": 8
+          },
+          "sen_varma_engagement_letter": {
+            "entities": 6,
+            "relationships": 5
+          },
+          "larkspur_shareholding_mar2025": {
+            "entities": 6,
+            "relationships": 5
+          },
+          "lfspl_board_minutes_may2025": {
+            "entities": 6,
+            "relationships": 6
+          },
+          "seabright_sanction_letter": {
+            "entities": 5,
+            "relationships": 3
+          }
+        }
+      },
+      "mention_nodes": 55,
+      "mention_edges": 46,
+      "dedup_seconds": {
+        "rswoosh": 0.0,
+        "probabilistic": 2.6,
+        "topological": 0.0,
+        "semantic": 4.9,
+        "llm_full_context": 11.4
+      },
+      "llm_dedup": {
+        "llm_calls": 1,
+        "input_tokens": 12011,
+        "output_tokens": 2783,
+        "llm_latency_s": 11.4,
+        "clusters": 16,
+        "unknown_ids": 0
+      },
+      "graphs": {
+        "llm_full_context": {
+          "nodes": 24,
+          "edges": 31,
+          "sql_seconds": 0.0,
+          "milvus_seconds": 7.0,
+          "milvus_entities": 23
+        }
+      }
+    },
+    "rag": {
+      "chunks": 16,
+      "chunk_words": 100,
+      "chunk_overlap": 20,
+      "top_k": 5,
+      "embedding_model": "sentence-transformers/all-mpnet-base-v2",
+      "embed_seconds": 12.2,
+      "model_load_seconds": 0.2
+    },
+    "full_context": {
+      "llm_calls": 0,
+      "chars": 8339,
+      "words": 1246
+    }
+  },
+  "live_api_calls": {
+    "gemini:gemini-3.5-flash-lite": {
+      "ok": 41,
+      "server-error 503": 1
+    }
+  }
+}

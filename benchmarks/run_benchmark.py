@@ -784,9 +784,35 @@ def live_call_ledger(run):
     return counts
 
 
-def resume_command():
-    argv = [a for a in sys.argv[1:] if a != "--resume"]
-    return "python benchmarks/run_benchmark.py " + " ".join(shlex.quote(a) for a in argv) + " --resume"
+def resume_command(argv=None):
+    """The command that continues this run over all questions (drops --limit-questions/--questions)."""
+    argv = list(sys.argv[1:] if argv is None else argv)
+    out, skip = [], False
+    for a in argv:
+        if skip:
+            skip = False
+            continue
+        if a in ("--limit-questions", "--questions"):
+            skip = True
+            continue
+        if a == "--resume" or a.startswith(("--limit-questions=", "--questions=")):
+            continue
+        out.append(a)
+    return "python benchmarks/run_benchmark.py " + " ".join(shlex.quote(a) for a in out) + " --resume"
+
+
+def run_status(run, halted_message):
+    """partial: stopped early; subset: finished, but only some of the questions were planned."""
+    if halted_message:
+        return "partial"
+    if "qa" in run.args.tasks:
+        qa = run.state.get("qa_questions", [])
+        systems = run.state.get("qa_systems", [])
+        if any(f"{q}|{s}" not in run.state["units"] for q in qa for s in systems):
+            return "partial"
+        if len(qa) < len(run.truth["questions"]):
+            return "subset"
+    return "complete"
 
 
 def write_results(run, status, message=None, resume_cmd=None):
@@ -982,25 +1008,24 @@ def main(argv=None):
                 setattr(args, key, value)
         args.resume = True
         run = Run(args)
-        write_results(run, state.get("status", "partial"), state.get("message"), state.get("resume_command"))
+        message = state.get("message")
+        cmd = resume_command(state["argv"]) if state.get("argv") else state.get("resume_command")
+        write_results(run, run_status(run, message), message, cmd)
         return 0
     run = Run(args)
     run.state["args"] = {k: v for k, v in vars(args).items() if k not in ("rescore", "report", "resume")}
-    status, message = "complete", None
+    run.state["argv"] = sys.argv[1:]
+    message = None
     try:
         for task in args.tasks:  # in the order given
             {"er": task_er, "qa": task_qa}[task](run)
     except (Halt, BudgetExhausted, QuotaExhausted) as exc:
-        status, message = "partial", f"stopped: {exc}"
+        message = f"stopped: {exc}"
         log.warning("Run stopped early: %s", exc)
     finally:
         run.save_state()
-    if status == "complete" and "qa" in args.tasks:
-        qa = run.state.get("qa_questions", [])
-        systems = run.state.get("qa_systems", [])
-        if any(f"{q}|{s}" not in run.state["units"] for q in qa for s in systems):
-            status = "partial"
-    run.state.update({"status": status, "message": message, "resume_command": resume_command()})
+    status = run_status(run, message)
+    run.state.update({"message": message, "resume_command": resume_command()})
     run.save_state()
     write_results(run, status, message)
     if status != "complete":

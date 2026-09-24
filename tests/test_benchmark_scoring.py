@@ -301,3 +301,11 @@ def test_cross_document_questions_need_two_documents():
     questions = json.loads((REPO_ROOT / "benchmarks" / "ground_truth" / "questions.json").read_text())["questions"]
     cross = [q for q in questions if q["type"] == "cross_doc"]
     assert cross and all(q["min_documents"] >= 2 for q in cross)
+
+
+def test_resume_command_drops_question_limits():
+    from benchmarks.run_benchmark import resume_command
+
+    cmd = resume_command(["--run-name", "g", "--limit-questions", "8", "--questions=Q01", "--resume",
+                          "--max-live-calls", "40"])
+    assert cmd == "python benchmarks/run_benchmark.py --run-name g --max-live-calls 40 --resume"
