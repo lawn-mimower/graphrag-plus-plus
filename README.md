@@ -173,4 +173,4 @@ InferenceStage.pdf        draft design for an answer-generation stage
 tests/                    offline and live tests; fixtures/ holds the synthetic documents and make_fixtures.py
 ```
 
-Licence: not yet specified.
+Licence: MIT — see LICENSE.
