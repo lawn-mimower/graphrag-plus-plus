@@ -146,7 +146,7 @@ class RSwooshDeduplicator:
         if entity1.get('type') != entity2.get('type'):
             return 0.0
 
-        # Compare attributes
+        # Compare attributes as (score, weight) pairs
         scores = []
 
         # Name comparison (most important)
@@ -155,7 +155,7 @@ class RSwooshDeduplicator:
 
         if name1 and name2:
             name_sim = fuzz.ratio(name1.lower(), name2.lower()) / 100.0
-            scores.append(name_sim * 2.0)  # Weight name more heavily
+            scores.append((name_sim, 2.0))  # Weight name more heavily
 
         # Compare other text attributes
         text_attrs = ['role', 'title', 'position', 'company', 'organization']
@@ -166,7 +166,7 @@ class RSwooshDeduplicator:
 
             if val1 and val2:
                 attr_sim = fuzz.ratio(val1, val2) / 100.0
-                scores.append(attr_sim)
+                scores.append((attr_sim, 1.0))
 
         # Compare exact match attributes (IDs, emails, etc.)
         exact_attrs = ['id', 'email', 'phone', 'din', 'pan', 'registration_id']
@@ -177,13 +177,13 @@ class RSwooshDeduplicator:
 
             if val1 and val2:
                 if val1 == val2:
-                    scores.append(1.0)
+                    scores.append((1.0, 1.0))
                 else:
-                    scores.append(0.0)
+                    scores.append((0.0, 1.0))
 
-        # Compute average similarity
+        # Compute weighted average similarity (stays within [0, 1])
         if scores:
-            return sum(scores) / len(scores)
+            return sum(s * w for s, w in scores) / sum(w for _, w in scores)
         else:
             # No comparable attributes
             return 0.0
