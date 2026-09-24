@@ -1,0 +1,1536 @@
+{
+  "mentions": [
+    {
+      "mention_id": "larkspur_annual_report_fy2025:COMPANY_001",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "COMPANY_001",
+      "entity_id": "C1",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Castings Private Limited",
+        "registered_office": "14 Canal Road, Riverton",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:COMPANY_002",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "COMPANY_002",
+      "entity_id": "C2",
+      "type": "Company",
+      "attributes": {
+        "name": "Tern Capital Private Limited",
+        "role": "Holding company",
+        "holding": "62%",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:COMPANY_003",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "COMPANY_003",
+      "entity_id": "C3",
+      "type": "Company",
+      "attributes": {
+        "name": "Harbourline Logistics Private Limited",
+        "role": "Wholly owned subsidiary",
+        "page_numbers": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:COMPANY_004",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "COMPANY_004",
+      "entity_id": "C4",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Foundry Services Private Limited",
+        "role": "Subsidiary",
+        "holding": "76%",
+        "page_numbers": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:PERSON_001",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "PERSON_001",
+      "entity_id": "P1",
+      "type": "Person",
+      "attributes": {
+        "name": "Mr. Arjun Mehta",
+        "din": "07410101",
+        "role": "Managing Director",
+        "page_numbers": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:PERSON_002",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "PERSON_002",
+      "entity_id": "P2",
+      "type": "Person",
+      "attributes": {
+        "name": "Ms. Meera Iyer",
+        "din": "08220202",
+        "role": "Independent Director",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:PERSON_003",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "PERSON_003",
+      "entity_id": "P3",
+      "type": "Person",
+      "attributes": {
+        "name": "Mr. Rohan Pillai",
+        "din": "06530303",
+        "role": "Whole-time Director and CFO",
+        "page_numbers": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:PERSON_004",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "PERSON_004",
+      "entity_id": "P7",
+      "type": "Person",
+      "attributes": {
+        "name": "Ms. Leela Narayan",
+        "din": "09140404",
+        "role": "Nominee Director",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:PERSON_005",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "PERSON_005",
+      "entity_id": "P5",
+      "type": "Person",
+      "attributes": {
+        "name": "Mr. Sameer Joshi",
+        "role": "Company Secretary",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:COMPANY_005",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "COMPANY_005",
+      "entity_id": "C9",
+      "type": "Company",
+      "attributes": {
+        "name": "Kestrel Alloy Castings Limited",
+        "role": "Customer",
+        "page_numbers": [
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:ORG_001",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "ORG_001",
+      "entity_id": "C7",
+      "type": "Organization",
+      "attributes": {
+        "name": "Sen & Varma LLP",
+        "role": "Statutory auditor",
+        "page_numbers": [
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:PERSON_006",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "PERSON_006",
+      "entity_id": "P6",
+      "type": "Person",
+      "attributes": {
+        "name": "Mr. Arun Mehta",
+        "role": "Partner",
+        "membership_no": "104455",
+        "page_numbers": [
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_annual_report_fy2025:COMPANY_006",
+      "document": "larkspur_annual_report_fy2025",
+      "extractor_id": "COMPANY_006",
+      "entity_id": "C5",
+      "type": "Company",
+      "attributes": {
+        "name": "Kestrel Alloys LLP",
+        "role": "Related party",
+        "page_numbers": [
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "COMPANY_001",
+      "entity_id": "C1",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Castings Pvt. Ltd.",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:PERSON_001",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "PERSON_001",
+      "entity_id": "P1",
+      "type": "Person",
+      "attributes": {
+        "name": "Arjun Mehta",
+        "role": "Chairperson",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:PERSON_002",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "PERSON_002",
+      "entity_id": "P2",
+      "type": "Person",
+      "attributes": {
+        "name": "M. Iyer",
+        "role": "Director",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:PERSON_003",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "PERSON_003",
+      "entity_id": "P3",
+      "type": "Person",
+      "attributes": {
+        "name": "R. Pillai",
+        "role": "Director",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:PERSON_004",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "PERSON_004",
+      "entity_id": "P7",
+      "type": "Person",
+      "attributes": {
+        "name": "L. Narayan",
+        "role": "Director",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:PERSON_005",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "PERSON_005",
+      "entity_id": "P5",
+      "type": "Person",
+      "attributes": {
+        "name": "S. Joshi",
+        "role": "Company Secretary",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:COMPANY_002",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "COMPANY_002",
+      "entity_id": "C5",
+      "type": "Company",
+      "attributes": {
+        "name": "M/s Kestrel Alloys LLP",
+        "role": "Supplier",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:ORG_001",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "ORG_001",
+      "entity_id": "C11",
+      "type": "Organization",
+      "attributes": {
+        "name": "Seabright Cooperative Bank Limited",
+        "role": "Lender",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:COMPANY_003",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "COMPANY_003",
+      "entity_id": "C3",
+      "type": "Company",
+      "attributes": {
+        "name": "Harbourline Logistics Pvt Ltd",
+        "role": "Wholly owned subsidiary",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:COMPANY_004",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "COMPANY_004",
+      "entity_id": "C9",
+      "type": "Company",
+      "attributes": {
+        "name": "Kestrel Alloy Castings Ltd",
+        "role": "Customer",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:COMPANY_005",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "COMPANY_005",
+      "entity_id": "C10",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Forgings Limited",
+        "role": "Customer",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_board_minutes_jul2025:ORG_002",
+      "document": "larkspur_board_minutes_jul2025",
+      "extractor_id": "ORG_002",
+      "entity_id": "C7",
+      "type": "Organization",
+      "attributes": {
+        "name": "Sen and Varma LLP",
+        "role": "Statutory auditor",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:COMPANY_001",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "COMPANY_001",
+      "entity_id": "C1",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Castings Private Limited",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:COMPANY_002",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "COMPANY_002",
+      "entity_id": "C2",
+      "type": "Company",
+      "attributes": {
+        "name": "Tern Capital Pvt Ltd",
+        "role": "Holding company",
+        "holding": "62%",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:COMPANY_003",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "COMPANY_003",
+      "entity_id": "C3",
+      "type": "Company",
+      "attributes": {
+        "name": "Harbourline Logistics Pvt. Ltd.",
+        "role": "Wholly owned subsidiary",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:ORG_001",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "ORG_001",
+      "entity_id": "C11",
+      "type": "Organization",
+      "attributes": {
+        "name": "Seabright Cooperative Bank",
+        "role": "Lender",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:COMPANY_004",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "COMPANY_004",
+      "entity_id": "C4",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Foundry Services Pvt Ltd",
+        "role": "Subsidiary",
+        "holding": "76%",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:COMPANY_005",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "COMPANY_005",
+      "entity_id": "C5",
+      "type": "Company",
+      "attributes": {
+        "name": "Kestrel Alloys LLP",
+        "role": "Related party",
+        "page_numbers": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:PERSON_001",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "PERSON_001",
+      "entity_id": "P1",
+      "type": "Person",
+      "attributes": {
+        "name": "Arjun Mehta",
+        "role": "Managing Director",
+        "page_numbers": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:PERSON_002",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "PERSON_002",
+      "entity_id": "P3",
+      "type": "Person",
+      "attributes": {
+        "name": "Rohan Pillai",
+        "role": "Whole-time Director and CFO",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:PERSON_003",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "PERSON_003",
+      "entity_id": "P2",
+      "type": "Person",
+      "attributes": {
+        "name": "Meera Iyer",
+        "role": "Independent Director",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:PERSON_004",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "PERSON_004",
+      "entity_id": "P5",
+      "type": "Person",
+      "attributes": {
+        "name": "Sameer Joshi",
+        "role": "Company Secretary",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:COMPANY_006",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "COMPANY_006",
+      "entity_id": "C9",
+      "type": "Company",
+      "attributes": {
+        "name": "Kestrel Alloy Castings Ltd",
+        "role": "Customer",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:COMPANY_007",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "COMPANY_007",
+      "entity_id": "C10",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Forgings Ltd",
+        "role": "Customer",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_related_parties_fy2025:PERSON_005",
+      "document": "larkspur_related_parties_fy2025",
+      "extractor_id": "PERSON_005",
+      "entity_id": "P8",
+      "type": "Person",
+      "attributes": {
+        "name": "Tomas Fernandes",
+        "role": "Designated partner",
+        "page_numbers": [
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "harbourline_annual_report_fy2025:COMPANY_001",
+      "document": "harbourline_annual_report_fy2025",
+      "extractor_id": "COMPANY_001",
+      "entity_id": "C3",
+      "type": "Company",
+      "attributes": {
+        "name": "Harbourline Logistics Private Limited",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "harbourline_annual_report_fy2025:COMPANY_002",
+      "document": "harbourline_annual_report_fy2025",
+      "extractor_id": "COMPANY_002",
+      "entity_id": "C1",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Castings Pvt Ltd",
+        "role": "Holding company",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "harbourline_annual_report_fy2025:PERSON_001",
+      "document": "harbourline_annual_report_fy2025",
+      "extractor_id": "PERSON_001",
+      "entity_id": "P1",
+      "type": "Person",
+      "attributes": {
+        "name": "Arjun K. Mehta",
+        "din": "07410101",
+        "role": "Director",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "harbourline_annual_report_fy2025:PERSON_002",
+      "document": "harbourline_annual_report_fy2025",
+      "extractor_id": "PERSON_002",
+      "entity_id": "P4",
+      "type": "Person",
+      "attributes": {
+        "name": "Kavita Bose",
+        "din": "08850505",
+        "role": "Director",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "harbourline_annual_report_fy2025:ORG_001",
+      "document": "harbourline_annual_report_fy2025",
+      "extractor_id": "ORG_001",
+      "entity_id": "C8",
+      "type": "Organization",
+      "attributes": {
+        "name": "Patel Rao & Associates",
+        "role": "Statutory auditor",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "harbourline_annual_report_fy2025:ORG_002",
+      "document": "harbourline_annual_report_fy2025",
+      "extractor_id": "ORG_002",
+      "entity_id": "C11",
+      "type": "Organization",
+      "attributes": {
+        "name": "Seabright Co-operative Bank Ltd",
+        "role": "Lender",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "harbourline_annual_report_fy2025:COMPANY_003",
+      "document": "harbourline_annual_report_fy2025",
+      "extractor_id": "COMPANY_003",
+      "entity_id": "C6",
+      "type": "Company",
+      "attributes": {
+        "name": "Bluefin Traders Private Limited",
+        "role": "Related party",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "sen_varma_engagement_letter:ORG_001",
+      "document": "sen_varma_engagement_letter",
+      "extractor_id": "ORG_001",
+      "entity_id": "C7",
+      "type": "Organization",
+      "attributes": {
+        "name": "SEN & VARMA LLP",
+        "role": "Statutory auditor",
+        "address": "7 Mill Lane, Riverton",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "sen_varma_engagement_letter:COMPANY_001",
+      "document": "sen_varma_engagement_letter",
+      "extractor_id": "COMPANY_001",
+      "entity_id": "C1",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Castings Private Limited",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "sen_varma_engagement_letter:COMPANY_002",
+      "document": "sen_varma_engagement_letter",
+      "extractor_id": "COMPANY_002",
+      "entity_id": "C4",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Foundry Services Private Limited",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "sen_varma_engagement_letter:PERSON_001",
+      "document": "sen_varma_engagement_letter",
+      "extractor_id": "PERSON_001",
+      "entity_id": "P6",
+      "type": "Person",
+      "attributes": {
+        "name": "Arun Mehta",
+        "role": "Partner",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "sen_varma_engagement_letter:PERSON_002",
+      "document": "sen_varma_engagement_letter",
+      "extractor_id": "PERSON_002",
+      "entity_id": "P3",
+      "type": "Person",
+      "attributes": {
+        "name": "Rohan Pillai",
+        "role": "Chief Financial Officer",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_shareholding_mar2025:COMPANY_001",
+      "document": "larkspur_shareholding_mar2025",
+      "extractor_id": "COMPANY_001",
+      "entity_id": "C1",
+      "type": "Company",
+      "attributes": {
+        "name": "LARKSPUR CASTINGS PRIVATE LIMITED",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_shareholding_mar2025:COMPANY_002",
+      "document": "larkspur_shareholding_mar2025",
+      "extractor_id": "COMPANY_002",
+      "entity_id": "C2",
+      "type": "Company",
+      "attributes": {
+        "name": "TERN CAPITAL PVT LTD",
+        "role": "Promoter (holding company)",
+        "holding": "62%",
+        "page_numbers": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_shareholding_mar2025:PERSON_001",
+      "document": "larkspur_shareholding_mar2025",
+      "extractor_id": "PERSON_001",
+      "entity_id": "P1",
+      "type": "Person",
+      "attributes": {
+        "name": "Arjun K. Mehta",
+        "role": "Promoter group",
+        "holding": "15%",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_shareholding_mar2025:PERSON_002",
+      "document": "larkspur_shareholding_mar2025",
+      "extractor_id": "PERSON_002",
+      "entity_id": "P7",
+      "type": "Person",
+      "attributes": {
+        "name": "Ms L. Narayan",
+        "role": "Director",
+        "page_numbers": [
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "larkspur_shareholding_mar2025:PERSON_003",
+      "document": "larkspur_shareholding_mar2025",
+      "extractor_id": "PERSON_003",
+      "entity_id": "P9",
+      "type": "Person",
+      "attributes": {
+        "name": "Mr Vikram Sethi",
+        "role": "Managing Director",
+        "page_numbers": [
+          2
+        ]
+      }
+    },
+    {
+      "mention_id": "lfspl_board_minutes_may2025:COMPANY_001",
+      "document": "lfspl_board_minutes_may2025",
+      "extractor_id": "COMPANY_001",
+      "entity_id": "C4",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Foundry Services Pvt Ltd",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "lfspl_board_minutes_may2025:PERSON_001",
+      "document": "lfspl_board_minutes_may2025",
+      "extractor_id": "PERSON_001",
+      "entity_id": "P3",
+      "type": "Person",
+      "attributes": {
+        "name": "Rohan K. Pillai",
+        "role": "Chairperson",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "lfspl_board_minutes_may2025:PERSON_002",
+      "document": "lfspl_board_minutes_may2025",
+      "extractor_id": "PERSON_002",
+      "entity_id": "P8",
+      "type": "Person",
+      "attributes": {
+        "name": "Tomas Fernandes",
+        "role": "Director",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "lfspl_board_minutes_may2025:COMPANY_002",
+      "document": "lfspl_board_minutes_may2025",
+      "extractor_id": "COMPANY_002",
+      "entity_id": "C1",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Castings Pvt Ltd",
+        "role": "Holding company",
+        "holding": "76%",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "lfspl_board_minutes_may2025:COMPANY_003",
+      "document": "lfspl_board_minutes_may2025",
+      "extractor_id": "COMPANY_003",
+      "entity_id": "C5",
+      "type": "Company",
+      "attributes": {
+        "name": "Kestrel Alloys",
+        "role": "Supplier",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "lfspl_board_minutes_may2025:ORG_001",
+      "document": "lfspl_board_minutes_may2025",
+      "extractor_id": "ORG_001",
+      "entity_id": "C7",
+      "type": "Organization",
+      "attributes": {
+        "name": "Sen & Varma",
+        "role": "Statutory auditor",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "seabright_sanction_letter:ORG_001",
+      "document": "seabright_sanction_letter",
+      "extractor_id": "ORG_001",
+      "entity_id": "C11",
+      "type": "Organization",
+      "attributes": {
+        "name": "SEABRIGHT COOPERATIVE BANK LIMITED",
+        "role": "Lender",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "seabright_sanction_letter:COMPANY_001",
+      "document": "seabright_sanction_letter",
+      "extractor_id": "COMPANY_001",
+      "entity_id": "C3",
+      "type": "Company",
+      "attributes": {
+        "name": "M/s Harbourline Logistics Pvt. Ltd.",
+        "role": "Borrower",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "seabright_sanction_letter:PERSON_001",
+      "document": "seabright_sanction_letter",
+      "extractor_id": "PERSON_001",
+      "entity_id": "P4",
+      "type": "Person",
+      "attributes": {
+        "name": "Ms. K. Bose",
+        "role": "Director",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "seabright_sanction_letter:COMPANY_002",
+      "document": "seabright_sanction_letter",
+      "extractor_id": "COMPANY_002",
+      "entity_id": "C1",
+      "type": "Company",
+      "attributes": {
+        "name": "Larkspur Castings Private Ltd.",
+        "role": "Guarantor",
+        "page_numbers": [
+          1
+        ]
+      }
+    },
+    {
+      "mention_id": "seabright_sanction_letter:COMPANY_003",
+      "document": "seabright_sanction_letter",
+      "extractor_id": "COMPANY_003",
+      "entity_id": "C6",
+      "type": "Company",
+      "attributes": {
+        "name": "Bluefin Traders Pvt Ltd",
+        "role": "Related party",
+        "page_numbers": [
+          1
+        ]
+      }
+    }
+  ],
+  "relations": [
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:COMPANY_002",
+      "to": "larkspur_annual_report_fy2025:COMPANY_001",
+      "type": "HOLDING_COMPANY_OF",
+      "attributes": {
+        "holding": "62%"
+      }
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:COMPANY_001",
+      "to": "larkspur_annual_report_fy2025:COMPANY_003",
+      "type": "PARENT_OF",
+      "attributes": {
+        "holding": "100%"
+      }
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:COMPANY_001",
+      "to": "larkspur_annual_report_fy2025:COMPANY_004",
+      "type": "PARENT_OF",
+      "attributes": {
+        "holding": "76%"
+      }
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:PERSON_001",
+      "to": "larkspur_annual_report_fy2025:COMPANY_001",
+      "type": "MANAGING_DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:PERSON_002",
+      "to": "larkspur_annual_report_fy2025:COMPANY_001",
+      "type": "INDEPENDENT_DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:PERSON_003",
+      "to": "larkspur_annual_report_fy2025:COMPANY_001",
+      "type": "WHOLE_TIME_DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:PERSON_003",
+      "to": "larkspur_annual_report_fy2025:COMPANY_001",
+      "type": "CFO_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:PERSON_004",
+      "to": "larkspur_annual_report_fy2025:COMPANY_001",
+      "type": "NOMINEE_DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:PERSON_004",
+      "to": "larkspur_annual_report_fy2025:COMPANY_002",
+      "type": "NOMINEE_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:PERSON_005",
+      "to": "larkspur_annual_report_fy2025:COMPANY_001",
+      "type": "COMPANY_SECRETARY_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:COMPANY_005",
+      "to": "larkspur_annual_report_fy2025:COMPANY_001",
+      "type": "CUSTOMER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:ORG_001",
+      "to": "larkspur_annual_report_fy2025:COMPANY_001",
+      "type": "AUDITOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:PERSON_006",
+      "to": "larkspur_annual_report_fy2025:ORG_001",
+      "type": "PARTNER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:COMPANY_001",
+      "to": "larkspur_annual_report_fy2025:COMPANY_006",
+      "type": "PURCHASED_FROM",
+      "attributes": {
+        "amount_inr": 12600000
+      }
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:PERSON_001",
+      "to": "larkspur_annual_report_fy2025:COMPANY_006",
+      "type": "DESIGNATED_PARTNER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:COMPANY_001",
+      "to": "larkspur_annual_report_fy2025:COMPANY_004",
+      "type": "LOAN_TO",
+      "attributes": {
+        "amount_inr": 5000000
+      }
+    },
+    {
+      "document": "larkspur_annual_report_fy2025",
+      "from": "larkspur_annual_report_fy2025:COMPANY_001",
+      "to": "larkspur_annual_report_fy2025:COMPANY_003",
+      "type": "GUARANTOR_FOR",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:PERSON_001",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "type": "CHAIRPERSON_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:PERSON_002",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "type": "DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:PERSON_003",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "type": "DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:PERSON_004",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "type": "DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:PERSON_005",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "type": "COMPANY_SECRETARY_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_002",
+      "type": "CONTRACT_WITH",
+      "attributes": {
+        "amount_inr": 15000000
+      }
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:PERSON_001",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_002",
+      "type": "DESIGNATED_PARTNER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_003",
+      "type": "GUARANTOR_FOR",
+      "attributes": {
+        "amount_inr": 40000000
+      }
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:ORG_001",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_003",
+      "type": "LENDER_TO",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_003",
+      "type": "PARENT_OF",
+      "attributes": {
+        "holding": "100%"
+      }
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:COMPANY_004",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "type": "CUSTOMER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:COMPANY_005",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "type": "CUSTOMER_OF",
+      "attributes": {
+        "amount_inr": 850000
+      }
+    },
+    {
+      "document": "larkspur_board_minutes_jul2025",
+      "from": "larkspur_board_minutes_jul2025:ORG_002",
+      "to": "larkspur_board_minutes_jul2025:COMPANY_001",
+      "type": "AUDITOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:COMPANY_002",
+      "to": "larkspur_related_parties_fy2025:COMPANY_001",
+      "type": "HOLDING_COMPANY_OF",
+      "attributes": {
+        "holding": "62%"
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:COMPANY_001",
+      "to": "larkspur_related_parties_fy2025:COMPANY_002",
+      "type": "DIVIDEND_PAID_TO",
+      "attributes": {
+        "amount_inr": 3100000
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:COMPANY_001",
+      "to": "larkspur_related_parties_fy2025:COMPANY_003",
+      "type": "GUARANTOR_FOR",
+      "attributes": {
+        "amount_inr": 40000000
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:COMPANY_001",
+      "to": "larkspur_related_parties_fy2025:COMPANY_003",
+      "type": "PARENT_OF",
+      "attributes": {
+        "holding": "100%"
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:ORG_001",
+      "to": "larkspur_related_parties_fy2025:COMPANY_003",
+      "type": "LENDER_TO",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:COMPANY_001",
+      "to": "larkspur_related_parties_fy2025:COMPANY_004",
+      "type": "LOAN_TO",
+      "attributes": {
+        "amount_inr": 5000000
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:COMPANY_001",
+      "to": "larkspur_related_parties_fy2025:COMPANY_004",
+      "type": "PARENT_OF",
+      "attributes": {
+        "holding": "76%"
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:COMPANY_001",
+      "to": "larkspur_related_parties_fy2025:COMPANY_005",
+      "type": "PURCHASED_FROM",
+      "attributes": {
+        "amount_inr": 12600000
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:PERSON_001",
+      "to": "larkspur_related_parties_fy2025:COMPANY_005",
+      "type": "DESIGNATED_PARTNER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:PERSON_005",
+      "to": "larkspur_related_parties_fy2025:COMPANY_005",
+      "type": "DESIGNATED_PARTNER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:PERSON_001",
+      "to": "larkspur_related_parties_fy2025:COMPANY_001",
+      "type": "MANAGING_DIRECTOR_OF",
+      "attributes": {
+        "remuneration_inr": 9600000
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:PERSON_002",
+      "to": "larkspur_related_parties_fy2025:COMPANY_001",
+      "type": "WHOLE_TIME_DIRECTOR_OF",
+      "attributes": {
+        "remuneration_inr": 6200000
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:PERSON_002",
+      "to": "larkspur_related_parties_fy2025:COMPANY_001",
+      "type": "CFO_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:PERSON_003",
+      "to": "larkspur_related_parties_fy2025:COMPANY_001",
+      "type": "INDEPENDENT_DIRECTOR_OF",
+      "attributes": {
+        "sitting_fees_inr": 480000
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:PERSON_004",
+      "to": "larkspur_related_parties_fy2025:COMPANY_001",
+      "type": "COMPANY_SECRETARY_OF",
+      "attributes": {
+        "remuneration_inr": 2400000
+      }
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:COMPANY_006",
+      "to": "larkspur_related_parties_fy2025:COMPANY_001",
+      "type": "CUSTOMER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_related_parties_fy2025",
+      "from": "larkspur_related_parties_fy2025:COMPANY_007",
+      "to": "larkspur_related_parties_fy2025:COMPANY_001",
+      "type": "CUSTOMER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "harbourline_annual_report_fy2025",
+      "from": "harbourline_annual_report_fy2025:COMPANY_002",
+      "to": "harbourline_annual_report_fy2025:COMPANY_001",
+      "type": "PARENT_OF",
+      "attributes": {
+        "holding": "100%"
+      }
+    },
+    {
+      "document": "harbourline_annual_report_fy2025",
+      "from": "harbourline_annual_report_fy2025:COMPANY_002",
+      "to": "harbourline_annual_report_fy2025:COMPANY_001",
+      "type": "GUARANTOR_FOR",
+      "attributes": {
+        "amount_inr": 40000000
+      }
+    },
+    {
+      "document": "harbourline_annual_report_fy2025",
+      "from": "harbourline_annual_report_fy2025:PERSON_001",
+      "to": "harbourline_annual_report_fy2025:COMPANY_001",
+      "type": "DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "harbourline_annual_report_fy2025",
+      "from": "harbourline_annual_report_fy2025:PERSON_002",
+      "to": "harbourline_annual_report_fy2025:COMPANY_001",
+      "type": "DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "harbourline_annual_report_fy2025",
+      "from": "harbourline_annual_report_fy2025:ORG_001",
+      "to": "harbourline_annual_report_fy2025:COMPANY_001",
+      "type": "AUDITOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "harbourline_annual_report_fy2025",
+      "from": "harbourline_annual_report_fy2025:ORG_002",
+      "to": "harbourline_annual_report_fy2025:COMPANY_001",
+      "type": "LENDER_TO",
+      "attributes": {
+        "amount_inr": 40000000
+      }
+    },
+    {
+      "document": "harbourline_annual_report_fy2025",
+      "from": "harbourline_annual_report_fy2025:COMPANY_001",
+      "to": "harbourline_annual_report_fy2025:COMPANY_003",
+      "type": "PURCHASED_SERVICES_FROM",
+      "attributes": {
+        "amount_inr": 1850000
+      }
+    },
+    {
+      "document": "harbourline_annual_report_fy2025",
+      "from": "harbourline_annual_report_fy2025:PERSON_002",
+      "to": "harbourline_annual_report_fy2025:COMPANY_003",
+      "type": "DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "sen_varma_engagement_letter",
+      "from": "sen_varma_engagement_letter:ORG_001",
+      "to": "sen_varma_engagement_letter:COMPANY_001",
+      "type": "AUDITOR_OF",
+      "attributes": {
+        "fee_inr": 1450000
+      }
+    },
+    {
+      "document": "sen_varma_engagement_letter",
+      "from": "sen_varma_engagement_letter:ORG_001",
+      "to": "sen_varma_engagement_letter:COMPANY_002",
+      "type": "AUDITOR_OF",
+      "attributes": {
+        "fee_inr": 380000
+      }
+    },
+    {
+      "document": "sen_varma_engagement_letter",
+      "from": "sen_varma_engagement_letter:PERSON_001",
+      "to": "sen_varma_engagement_letter:ORG_001",
+      "type": "PARTNER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "sen_varma_engagement_letter",
+      "from": "sen_varma_engagement_letter:PERSON_002",
+      "to": "sen_varma_engagement_letter:COMPANY_001",
+      "type": "CFO_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_shareholding_mar2025",
+      "from": "larkspur_shareholding_mar2025:COMPANY_002",
+      "to": "larkspur_shareholding_mar2025:COMPANY_001",
+      "type": "HOLDING_COMPANY_OF",
+      "attributes": {
+        "holding": "62%"
+      }
+    },
+    {
+      "document": "larkspur_shareholding_mar2025",
+      "from": "larkspur_shareholding_mar2025:PERSON_001",
+      "to": "larkspur_shareholding_mar2025:COMPANY_001",
+      "type": "SHAREHOLDER_OF",
+      "attributes": {
+        "holding": "15%"
+      }
+    },
+    {
+      "document": "larkspur_shareholding_mar2025",
+      "from": "larkspur_shareholding_mar2025:PERSON_002",
+      "to": "larkspur_shareholding_mar2025:COMPANY_002",
+      "type": "DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "larkspur_shareholding_mar2025",
+      "from": "larkspur_shareholding_mar2025:PERSON_003",
+      "to": "larkspur_shareholding_mar2025:COMPANY_002",
+      "type": "MANAGING_DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "lfspl_board_minutes_may2025",
+      "from": "lfspl_board_minutes_may2025:PERSON_001",
+      "to": "lfspl_board_minutes_may2025:COMPANY_001",
+      "type": "CHAIRPERSON_OF",
+      "attributes": {}
+    },
+    {
+      "document": "lfspl_board_minutes_may2025",
+      "from": "lfspl_board_minutes_may2025:PERSON_002",
+      "to": "lfspl_board_minutes_may2025:COMPANY_001",
+      "type": "DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "lfspl_board_minutes_may2025",
+      "from": "lfspl_board_minutes_may2025:COMPANY_002",
+      "to": "lfspl_board_minutes_may2025:COMPANY_001",
+      "type": "PARENT_OF",
+      "attributes": {
+        "holding": "76%"
+      }
+    },
+    {
+      "document": "lfspl_board_minutes_may2025",
+      "from": "lfspl_board_minutes_may2025:COMPANY_002",
+      "to": "lfspl_board_minutes_may2025:COMPANY_001",
+      "type": "LOAN_TO",
+      "attributes": {
+        "amount_inr": 5000000
+      }
+    },
+    {
+      "document": "lfspl_board_minutes_may2025",
+      "from": "lfspl_board_minutes_may2025:PERSON_002",
+      "to": "lfspl_board_minutes_may2025:COMPANY_003",
+      "type": "DESIGNATED_PARTNER_OF",
+      "attributes": {}
+    },
+    {
+      "document": "lfspl_board_minutes_may2025",
+      "from": "lfspl_board_minutes_may2025:COMPANY_001",
+      "to": "lfspl_board_minutes_may2025:COMPANY_003",
+      "type": "PURCHASED_FROM",
+      "attributes": {
+        "amount_inr": 2100000
+      }
+    },
+    {
+      "document": "lfspl_board_minutes_may2025",
+      "from": "lfspl_board_minutes_may2025:ORG_001",
+      "to": "lfspl_board_minutes_may2025:COMPANY_001",
+      "type": "AUDITOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "seabright_sanction_letter",
+      "from": "seabright_sanction_letter:ORG_001",
+      "to": "seabright_sanction_letter:COMPANY_001",
+      "type": "LENDER_TO",
+      "attributes": {
+        "amount_inr": 40000000
+      }
+    },
+    {
+      "document": "seabright_sanction_letter",
+      "from": "seabright_sanction_letter:PERSON_001",
+      "to": "seabright_sanction_letter:COMPANY_001",
+      "type": "DIRECTOR_OF",
+      "attributes": {}
+    },
+    {
+      "document": "seabright_sanction_letter",
+      "from": "seabright_sanction_letter:COMPANY_002",
+      "to": "seabright_sanction_letter:COMPANY_001",
+      "type": "GUARANTOR_FOR",
+      "attributes": {}
+    },
+    {
+      "document": "seabright_sanction_letter",
+      "from": "seabright_sanction_letter:COMPANY_002",
+      "to": "seabright_sanction_letter:COMPANY_001",
+      "type": "PARENT_OF",
+      "attributes": {}
+    },
+    {
+      "document": "seabright_sanction_letter",
+      "from": "seabright_sanction_letter:COMPANY_001",
+      "to": "seabright_sanction_letter:COMPANY_003",
+      "type": "PURCHASED_SERVICES_FROM",
+      "attributes": {
+        "limit_inr": 2500000
+      }
+    }
+  ]
+}

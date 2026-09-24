@@ -1,0 +1,52 @@
+{
+  "documents": [
+    {
+      "name": "larkspur_annual_report_fy2025",
+      "file": "larkspur_annual_report_fy2025.pdf",
+      "format": "pdf",
+      "pages": 2
+    },
+    {
+      "name": "larkspur_board_minutes_jul2025",
+      "file": "larkspur_board_minutes_jul2025.docx",
+      "format": "docx",
+      "pages": 1
+    },
+    {
+      "name": "larkspur_related_parties_fy2025",
+      "file": "larkspur_related_parties_fy2025.xlsx",
+      "format": "xlsx",
+      "pages": 2
+    },
+    {
+      "name": "harbourline_annual_report_fy2025",
+      "file": "harbourline_annual_report_fy2025.pdf",
+      "format": "pdf",
+      "pages": 1
+    },
+    {
+      "name": "sen_varma_engagement_letter",
+      "file": "sen_varma_engagement_letter.docx",
+      "format": "docx",
+      "pages": 1
+    },
+    {
+      "name": "larkspur_shareholding_mar2025",
+      "file": "larkspur_shareholding_mar2025.xlsx",
+      "format": "xlsx",
+      "pages": 2
+    },
+    {
+      "name": "lfspl_board_minutes_may2025",
+      "file": "lfspl_board_minutes_may2025.docx",
+      "format": "docx",
+      "pages": 1
+    },
+    {
+      "name": "seabright_sanction_letter",
+      "file": "seabright_sanction_letter.pdf",
+      "format": "pdf",
+      "pages": 1
+    }
+  ]
+}

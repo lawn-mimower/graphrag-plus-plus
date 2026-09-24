@@ -1,0 +1,247 @@
+{
+  "entities": [
+    {
+      "id": "P1",
+      "type": "Person",
+      "canonical_name": "Arjun Mehta",
+      "aliases": [
+        "Arjun Mehta",
+        "Mr. Arjun Mehta",
+        "Arjun K. Mehta"
+      ],
+      "ambiguous_surfaces": [
+        "A. Mehta",
+        "Mr. Mehta"
+      ]
+    },
+    {
+      "id": "P2",
+      "type": "Person",
+      "canonical_name": "Meera Iyer",
+      "aliases": [
+        "Meera Iyer",
+        "Ms. Meera Iyer",
+        "M. Iyer",
+        "Ms. Iyer"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "P3",
+      "type": "Person",
+      "canonical_name": "Rohan Pillai",
+      "aliases": [
+        "Rohan Pillai",
+        "Mr. Rohan Pillai",
+        "R. Pillai",
+        "Rohan K. Pillai"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "P4",
+      "type": "Person",
+      "canonical_name": "Kavita Bose",
+      "aliases": [
+        "Kavita Bose",
+        "Ms. Kavita Bose",
+        "K. Bose",
+        "Ms. K. Bose"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "P5",
+      "type": "Person",
+      "canonical_name": "Sameer Joshi",
+      "aliases": [
+        "Sameer Joshi",
+        "Mr. Sameer Joshi",
+        "S. Joshi"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "P6",
+      "type": "Person",
+      "canonical_name": "Arun Mehta",
+      "aliases": [
+        "Arun Mehta",
+        "Mr. Arun Mehta"
+      ],
+      "ambiguous_surfaces": [
+        "A. Mehta"
+      ]
+    },
+    {
+      "id": "P7",
+      "type": "Person",
+      "canonical_name": "Leela Narayan",
+      "aliases": [
+        "Leela Narayan",
+        "Ms. Leela Narayan",
+        "L. Narayan",
+        "Ms L. Narayan"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "P8",
+      "type": "Person",
+      "canonical_name": "Tomas Fernandes",
+      "aliases": [
+        "Tomas Fernandes",
+        "Mr. Tomas Fernandes",
+        "T. Fernandes",
+        "Mr. Fernandes"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "P9",
+      "type": "Person",
+      "canonical_name": "Vikram Sethi",
+      "aliases": [
+        "Vikram Sethi",
+        "Mr Vikram Sethi",
+        "V. Sethi"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C1",
+      "type": "Company",
+      "canonical_name": "Larkspur Castings Private Limited",
+      "aliases": [
+        "Larkspur Castings Private Limited",
+        "Larkspur Castings Pvt. Ltd.",
+        "Larkspur Castings Pvt Ltd",
+        "Larkspur Castings Private Ltd.",
+        "LARKSPUR CASTINGS PRIVATE LIMITED",
+        "Larkspur Castings",
+        "LCPL"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C2",
+      "type": "Company",
+      "canonical_name": "Tern Capital Private Limited",
+      "aliases": [
+        "Tern Capital Private Limited",
+        "Tern Capital Pvt Ltd",
+        "TERN CAPITAL PVT LTD",
+        "Tern Capital",
+        "TCPL"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C3",
+      "type": "Company",
+      "canonical_name": "Harbourline Logistics Private Limited",
+      "aliases": [
+        "Harbourline Logistics Private Limited",
+        "Harbourline Logistics Pvt Ltd",
+        "Harbourline Logistics Pvt. Ltd.",
+        "M/s Harbourline Logistics Pvt. Ltd.",
+        "Harbourline Logistics",
+        "Harbourline",
+        "HLPL"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C4",
+      "type": "Company",
+      "canonical_name": "Larkspur Foundry Services Private Limited",
+      "aliases": [
+        "Larkspur Foundry Services Private Limited",
+        "Larkspur Foundry Services Pvt Ltd",
+        "Larkspur Foundry Services",
+        "LFSPL"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C5",
+      "type": "Company",
+      "canonical_name": "Kestrel Alloys LLP",
+      "aliases": [
+        "Kestrel Alloys LLP",
+        "M/s Kestrel Alloys LLP",
+        "Kestrel Alloys"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C6",
+      "type": "Company",
+      "canonical_name": "Bluefin Traders Private Limited",
+      "aliases": [
+        "Bluefin Traders Private Limited",
+        "Bluefin Traders Pvt Ltd",
+        "Bluefin Traders"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C7",
+      "type": "Organization",
+      "canonical_name": "Sen & Varma LLP",
+      "aliases": [
+        "Sen & Varma LLP",
+        "SEN & VARMA LLP",
+        "Sen and Varma LLP",
+        "Sen & Varma"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C8",
+      "type": "Organization",
+      "canonical_name": "Patel Rao & Associates",
+      "aliases": [
+        "Patel Rao & Associates",
+        "Patel Rao and Associates",
+        "Patel Rao"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C9",
+      "type": "Company",
+      "canonical_name": "Kestrel Alloy Castings Limited",
+      "aliases": [
+        "Kestrel Alloy Castings Limited",
+        "Kestrel Alloy Castings Ltd",
+        "Kestrel Alloy Castings"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C10",
+      "type": "Company",
+      "canonical_name": "Larkspur Forgings Limited",
+      "aliases": [
+        "Larkspur Forgings Limited",
+        "Larkspur Forgings Ltd",
+        "Larkspur Forgings"
+      ],
+      "ambiguous_surfaces": []
+    },
+    {
+      "id": "C11",
+      "type": "Organization",
+      "canonical_name": "Seabright Cooperative Bank Limited",
+      "aliases": [
+        "Seabright Cooperative Bank Limited",
+        "Seabright Co-operative Bank Ltd",
+        "SEABRIGHT COOPERATIVE BANK LIMITED",
+        "Seabright Cooperative Bank",
+        "Seabright Bank"
+      ],
+      "ambiguous_surfaces": []
+    }
+  ]
+}

@@ -1,0 +1,422 @@
+{
+  "relations": [
+    {
+      "from": "C1",
+      "type": "CONTRACT_WITH",
+      "to": "C5",
+      "attributes": {
+        "amount_inr": 15000000
+      },
+      "documents": [
+        "larkspur_board_minutes_jul2025"
+      ]
+    },
+    {
+      "from": "C1",
+      "type": "DIVIDEND_PAID_TO",
+      "to": "C2",
+      "attributes": {
+        "amount_inr": 3100000
+      },
+      "documents": [
+        "larkspur_related_parties_fy2025"
+      ]
+    },
+    {
+      "from": "C1",
+      "type": "GUARANTOR_FOR",
+      "to": "C3",
+      "attributes": {
+        "amount_inr": 40000000
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_board_minutes_jul2025",
+        "larkspur_related_parties_fy2025",
+        "harbourline_annual_report_fy2025",
+        "seabright_sanction_letter"
+      ]
+    },
+    {
+      "from": "C1",
+      "type": "LOAN_TO",
+      "to": "C4",
+      "attributes": {
+        "amount_inr": 5000000
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_related_parties_fy2025",
+        "lfspl_board_minutes_may2025"
+      ]
+    },
+    {
+      "from": "C1",
+      "type": "PARENT_OF",
+      "to": "C3",
+      "attributes": {
+        "holding": "100%"
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_board_minutes_jul2025",
+        "larkspur_related_parties_fy2025",
+        "harbourline_annual_report_fy2025",
+        "seabright_sanction_letter"
+      ]
+    },
+    {
+      "from": "C1",
+      "type": "PARENT_OF",
+      "to": "C4",
+      "attributes": {
+        "holding": "76%"
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_related_parties_fy2025",
+        "lfspl_board_minutes_may2025"
+      ]
+    },
+    {
+      "from": "C1",
+      "type": "PURCHASED_FROM",
+      "to": "C5",
+      "attributes": {
+        "amount_inr": 12600000
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_related_parties_fy2025"
+      ]
+    },
+    {
+      "from": "C10",
+      "type": "CUSTOMER_OF",
+      "to": "C1",
+      "attributes": {
+        "amount_inr": 850000
+      },
+      "documents": [
+        "larkspur_board_minutes_jul2025",
+        "larkspur_related_parties_fy2025"
+      ]
+    },
+    {
+      "from": "C11",
+      "type": "LENDER_TO",
+      "to": "C3",
+      "attributes": {
+        "amount_inr": 40000000
+      },
+      "documents": [
+        "larkspur_board_minutes_jul2025",
+        "larkspur_related_parties_fy2025",
+        "harbourline_annual_report_fy2025",
+        "seabright_sanction_letter"
+      ]
+    },
+    {
+      "from": "C2",
+      "type": "HOLDING_COMPANY_OF",
+      "to": "C1",
+      "attributes": {
+        "holding": "62%"
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_related_parties_fy2025",
+        "larkspur_shareholding_mar2025"
+      ]
+    },
+    {
+      "from": "C3",
+      "type": "PURCHASED_SERVICES_FROM",
+      "to": "C6",
+      "attributes": {
+        "amount_inr": 1850000,
+        "limit_inr": 2500000
+      },
+      "documents": [
+        "harbourline_annual_report_fy2025",
+        "seabright_sanction_letter"
+      ]
+    },
+    {
+      "from": "C4",
+      "type": "PURCHASED_FROM",
+      "to": "C5",
+      "attributes": {
+        "amount_inr": 2100000
+      },
+      "documents": [
+        "lfspl_board_minutes_may2025"
+      ]
+    },
+    {
+      "from": "C7",
+      "type": "AUDITOR_OF",
+      "to": "C1",
+      "attributes": {
+        "fee_inr": 1450000
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_board_minutes_jul2025",
+        "sen_varma_engagement_letter"
+      ]
+    },
+    {
+      "from": "C7",
+      "type": "AUDITOR_OF",
+      "to": "C4",
+      "attributes": {
+        "fee_inr": 380000
+      },
+      "documents": [
+        "sen_varma_engagement_letter",
+        "lfspl_board_minutes_may2025"
+      ]
+    },
+    {
+      "from": "C8",
+      "type": "AUDITOR_OF",
+      "to": "C3",
+      "attributes": {},
+      "documents": [
+        "harbourline_annual_report_fy2025"
+      ]
+    },
+    {
+      "from": "C9",
+      "type": "CUSTOMER_OF",
+      "to": "C1",
+      "attributes": {},
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_board_minutes_jul2025",
+        "larkspur_related_parties_fy2025"
+      ]
+    },
+    {
+      "from": "P1",
+      "type": "CHAIRPERSON_OF",
+      "to": "C1",
+      "attributes": {},
+      "documents": [
+        "larkspur_board_minutes_jul2025"
+      ]
+    },
+    {
+      "from": "P1",
+      "type": "DESIGNATED_PARTNER_OF",
+      "to": "C5",
+      "attributes": {},
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_board_minutes_jul2025",
+        "larkspur_related_parties_fy2025"
+      ]
+    },
+    {
+      "from": "P1",
+      "type": "DIRECTOR_OF",
+      "to": "C3",
+      "attributes": {},
+      "documents": [
+        "harbourline_annual_report_fy2025"
+      ]
+    },
+    {
+      "from": "P1",
+      "type": "MANAGING_DIRECTOR_OF",
+      "to": "C1",
+      "attributes": {
+        "remuneration_inr": 9600000
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_related_parties_fy2025"
+      ]
+    },
+    {
+      "from": "P1",
+      "type": "SHAREHOLDER_OF",
+      "to": "C1",
+      "attributes": {
+        "holding": "15%"
+      },
+      "documents": [
+        "larkspur_shareholding_mar2025"
+      ]
+    },
+    {
+      "from": "P2",
+      "type": "DIRECTOR_OF",
+      "to": "C1",
+      "attributes": {},
+      "documents": [
+        "larkspur_board_minutes_jul2025"
+      ]
+    },
+    {
+      "from": "P2",
+      "type": "INDEPENDENT_DIRECTOR_OF",
+      "to": "C1",
+      "attributes": {
+        "sitting_fees_inr": 480000
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_related_parties_fy2025"
+      ]
+    },
+    {
+      "from": "P3",
+      "type": "CFO_OF",
+      "to": "C1",
+      "attributes": {},
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_related_parties_fy2025",
+        "sen_varma_engagement_letter"
+      ]
+    },
+    {
+      "from": "P3",
+      "type": "CHAIRPERSON_OF",
+      "to": "C4",
+      "attributes": {},
+      "documents": [
+        "lfspl_board_minutes_may2025"
+      ]
+    },
+    {
+      "from": "P3",
+      "type": "DIRECTOR_OF",
+      "to": "C1",
+      "attributes": {},
+      "documents": [
+        "larkspur_board_minutes_jul2025"
+      ]
+    },
+    {
+      "from": "P3",
+      "type": "WHOLE_TIME_DIRECTOR_OF",
+      "to": "C1",
+      "attributes": {
+        "remuneration_inr": 6200000
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_related_parties_fy2025"
+      ]
+    },
+    {
+      "from": "P4",
+      "type": "DIRECTOR_OF",
+      "to": "C3",
+      "attributes": {},
+      "documents": [
+        "harbourline_annual_report_fy2025",
+        "seabright_sanction_letter"
+      ]
+    },
+    {
+      "from": "P4",
+      "type": "DIRECTOR_OF",
+      "to": "C6",
+      "attributes": {},
+      "documents": [
+        "harbourline_annual_report_fy2025"
+      ]
+    },
+    {
+      "from": "P5",
+      "type": "COMPANY_SECRETARY_OF",
+      "to": "C1",
+      "attributes": {
+        "remuneration_inr": 2400000
+      },
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_board_minutes_jul2025",
+        "larkspur_related_parties_fy2025"
+      ]
+    },
+    {
+      "from": "P6",
+      "type": "PARTNER_OF",
+      "to": "C7",
+      "attributes": {},
+      "documents": [
+        "larkspur_annual_report_fy2025",
+        "sen_varma_engagement_letter"
+      ]
+    },
+    {
+      "from": "P7",
+      "type": "DIRECTOR_OF",
+      "to": "C1",
+      "attributes": {},
+      "documents": [
+        "larkspur_board_minutes_jul2025"
+      ]
+    },
+    {
+      "from": "P7",
+      "type": "DIRECTOR_OF",
+      "to": "C2",
+      "attributes": {},
+      "documents": [
+        "larkspur_shareholding_mar2025"
+      ]
+    },
+    {
+      "from": "P7",
+      "type": "NOMINEE_DIRECTOR_OF",
+      "to": "C1",
+      "attributes": {},
+      "documents": [
+        "larkspur_annual_report_fy2025"
+      ]
+    },
+    {
+      "from": "P7",
+      "type": "NOMINEE_OF",
+      "to": "C2",
+      "attributes": {},
+      "documents": [
+        "larkspur_annual_report_fy2025"
+      ]
+    },
+    {
+      "from": "P8",
+      "type": "DESIGNATED_PARTNER_OF",
+      "to": "C5",
+      "attributes": {},
+      "documents": [
+        "larkspur_related_parties_fy2025",
+        "lfspl_board_minutes_may2025"
+      ]
+    },
+    {
+      "from": "P8",
+      "type": "DIRECTOR_OF",
+      "to": "C4",
+      "attributes": {},
+      "documents": [
+        "lfspl_board_minutes_may2025"
+      ]
+    },
+    {
+      "from": "P9",
+      "type": "MANAGING_DIRECTOR_OF",
+      "to": "C2",
+      "attributes": {},
+      "documents": [
+        "larkspur_shareholding_mar2025"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1173 @@
+{
+  "questions": [
+    {
+      "id": "Q01",
+      "type": "lookup",
+      "question": "Who is the Managing Director of Larkspur Castings Private Limited?",
+      "answer_type": "entity",
+      "answer": [
+        "P1"
+      ],
+      "evidence_entities": [
+        "P1",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P1",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 10
+    },
+    {
+      "id": "Q02",
+      "type": "lookup",
+      "question": "Who is the Company Secretary of Larkspur Castings?",
+      "answer_type": "entity",
+      "answer": [
+        "P5"
+      ],
+      "evidence_entities": [
+        "P5",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P5",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 20
+    },
+    {
+      "id": "Q03",
+      "type": "lookup",
+      "question": "Which firm is the statutory auditor of Harbourline Logistics?",
+      "answer_type": "entity",
+      "answer": [
+        "C8"
+      ],
+      "evidence_entities": [
+        "C8",
+        "C3"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C8",
+            "C3"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025"
+      ],
+      "priority": 30
+    },
+    {
+      "id": "Q04",
+      "type": "lookup",
+      "question": "Which company is the holding company of Larkspur Castings?",
+      "answer_type": "entity",
+      "answer": [
+        "C2"
+      ],
+      "evidence_entities": [
+        "C2",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C2",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 40
+    },
+    {
+      "id": "Q05",
+      "type": "lookup",
+      "question": "Who is the Chairperson of the Audit Committee of Larkspur Castings?",
+      "answer_type": "entity",
+      "answer": [
+        "P2"
+      ],
+      "evidence_entities": [
+        "P2",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P2",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 50
+    },
+    {
+      "id": "Q06",
+      "type": "lookup",
+      "question": "Which partner of the audit firm signed the auditor's report of Larkspur Castings for FY 2024-25?",
+      "answer_type": "entity",
+      "answer": [
+        "P6"
+      ],
+      "evidence_entities": [
+        "P6",
+        "C7"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P6",
+            "C7"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 60
+    },
+    {
+      "id": "Q07",
+      "type": "lookup",
+      "question": "Which bank sanctioned a term loan to Harbourline Logistics?",
+      "answer_type": "entity",
+      "answer": [
+        "C11"
+      ],
+      "evidence_entities": [
+        "C11",
+        "C3"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C11",
+            "C3"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025"
+      ],
+      "priority": 70
+    },
+    {
+      "id": "Q08",
+      "type": "lookup",
+      "question": "Who chaired the board meeting of Larkspur Foundry Services held on 22 May 2025?",
+      "answer_type": "entity",
+      "answer": [
+        "P3"
+      ],
+      "evidence_entities": [
+        "P3",
+        "C4"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P3",
+            "C4"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "lfspl_board_minutes_may2025"
+      ],
+      "priority": 80
+    },
+    {
+      "id": "Q09",
+      "type": "attribute",
+      "question": "What is the DIN of Meera Iyer?",
+      "answer_type": "string",
+      "answer": "08220202",
+      "evidence_entities": [
+        "P2"
+      ],
+      "evidence_paths": [],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 11
+    },
+    {
+      "id": "Q10",
+      "type": "attribute",
+      "question": "What percentage of the equity of Larkspur Castings is held by Tern Capital?",
+      "answer_type": "number",
+      "answer": 62,
+      "evidence_entities": [
+        "C2",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C2",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 21
+    },
+    {
+      "id": "Q11",
+      "type": "attribute",
+      "question": "What was the value, in INR, of the alloy ingots Larkspur Castings bought from Kestrel Alloys LLP in FY 2024-25?",
+      "answer_type": "number",
+      "answer": 12600000,
+      "evidence_entities": [
+        "C1",
+        "C5"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C1",
+            "C5"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 31
+    },
+    {
+      "id": "Q12",
+      "type": "attribute",
+      "question": "What is the amount, in INR, of the term loan sanctioned to Harbourline Logistics?",
+      "answer_type": "number",
+      "answer": 40000000,
+      "evidence_entities": [
+        "C11",
+        "C3"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C11",
+            "C3"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025"
+      ],
+      "priority": 41
+    },
+    {
+      "id": "Q13",
+      "type": "attribute",
+      "question": "How much remuneration, in INR, did Larkspur Castings pay its Managing Director?",
+      "answer_type": "number",
+      "answer": 9600000,
+      "evidence_entities": [
+        "P1",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P1",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_related_parties_fy2025"
+      ],
+      "priority": 51
+    },
+    {
+      "id": "Q14",
+      "type": "attribute",
+      "question": "How much did Harbourline Logistics pay Bluefin Traders for freight brokerage, in INR?",
+      "answer_type": "number",
+      "answer": 1850000,
+      "evidence_entities": [
+        "C3",
+        "C6"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C3",
+            "C6"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025"
+      ],
+      "priority": 61
+    },
+    {
+      "id": "Q15",
+      "type": "yes_no",
+      "question": "Is Kestrel Alloy Castings Limited a related party of Larkspur Castings?",
+      "answer_type": "yes_no",
+      "answer": "no",
+      "evidence_entities": [
+        "C9",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C9",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 12
+    },
+    {
+      "id": "Q16",
+      "type": "yes_no",
+      "question": "Is Larkspur Forgings Limited a subsidiary of Larkspur Castings?",
+      "answer_type": "yes_no",
+      "answer": "no",
+      "evidence_entities": [
+        "C10",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C10",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_board_minutes_jul2025"
+      ],
+      "priority": 22
+    },
+    {
+      "id": "Q17",
+      "type": "yes_no",
+      "question": "Is Arun Mehta a director of Larkspur Castings?",
+      "answer_type": "yes_no",
+      "answer": "no",
+      "evidence_entities": [
+        "P6"
+      ],
+      "evidence_paths": [],
+      "min_documents": null,
+      "documents_needed": [],
+      "priority": 32
+    },
+    {
+      "id": "Q18",
+      "type": "yes_no",
+      "question": "Is Kavita Bose a director of Bluefin Traders?",
+      "answer_type": "yes_no",
+      "answer": "yes",
+      "evidence_entities": [
+        "P4",
+        "C6"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P4",
+            "C6"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025"
+      ],
+      "priority": 42
+    },
+    {
+      "id": "Q19",
+      "type": "multi_hop",
+      "question": "How is Kavita Bose connected to Larkspur Castings?",
+      "answer_type": "entity",
+      "answer": [
+        "C3"
+      ],
+      "evidence_entities": [
+        "P4",
+        "C3",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P4",
+            "C3"
+          ],
+          [
+            "C1",
+            "C3"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025"
+      ],
+      "priority": 13
+    },
+    {
+      "id": "Q20",
+      "type": "multi_hop",
+      "question": "How is Arun Mehta connected to Larkspur Castings?",
+      "answer_type": "entity",
+      "answer": [
+        "C7"
+      ],
+      "evidence_entities": [
+        "P6",
+        "C7",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P6",
+            "C7"
+          ],
+          [
+            "C7",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 23
+    },
+    {
+      "id": "Q21",
+      "type": "multi_hop",
+      "question": "How is Tomas Fernandes connected to Larkspur Castings?",
+      "answer_type": "entity_any",
+      "answer": [
+        "C4",
+        "C5"
+      ],
+      "evidence_entities": [
+        "P8",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P8",
+            "C4"
+          ],
+          [
+            "C1",
+            "C4"
+          ]
+        ],
+        [
+          [
+            "P8",
+            "C5"
+          ],
+          [
+            "C1",
+            "C5"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "lfspl_board_minutes_may2025"
+      ],
+      "priority": 33
+    },
+    {
+      "id": "Q22",
+      "type": "multi_hop",
+      "question": "How is Vikram Sethi connected to Harbourline Logistics?",
+      "answer_type": "entity",
+      "answer": [
+        "C2",
+        "C1"
+      ],
+      "evidence_entities": [
+        "P9",
+        "C2",
+        "C1",
+        "C3"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P9",
+            "C2"
+          ],
+          [
+            "C2",
+            "C1"
+          ],
+          [
+            "C1",
+            "C3"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025",
+        "larkspur_shareholding_mar2025"
+      ],
+      "priority": 43
+    },
+    {
+      "id": "Q23",
+      "type": "multi_hop",
+      "question": "How is Kavita Bose connected to Tern Capital?",
+      "answer_type": "entity",
+      "answer": [
+        "C3",
+        "C1"
+      ],
+      "evidence_entities": [
+        "P4",
+        "C3",
+        "C1",
+        "C2"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P4",
+            "C3"
+          ],
+          [
+            "C1",
+            "C3"
+          ],
+          [
+            "C2",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025",
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 53
+    },
+    {
+      "id": "Q24",
+      "type": "multi_hop",
+      "question": "How is Bluefin Traders connected to Larkspur Foundry Services?",
+      "answer_type": "entity",
+      "answer": [
+        "C3",
+        "C1"
+      ],
+      "evidence_entities": [
+        "C6",
+        "C3",
+        "C1",
+        "C4"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C3",
+            "C6"
+          ],
+          [
+            "C1",
+            "C3"
+          ],
+          [
+            "C1",
+            "C4"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025",
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 63
+    },
+    {
+      "id": "Q25",
+      "type": "multi_hop",
+      "question": "How is Patel Rao & Associates connected to Tern Capital?",
+      "answer_type": "entity",
+      "answer": [
+        "C3",
+        "C1"
+      ],
+      "evidence_entities": [
+        "C8",
+        "C3",
+        "C1",
+        "C2"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C8",
+            "C3"
+          ],
+          [
+            "C1",
+            "C3"
+          ],
+          [
+            "C2",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025",
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 73
+    },
+    {
+      "id": "Q26",
+      "type": "multi_hop",
+      "question": "How is Tomas Fernandes connected to Harbourline Logistics?",
+      "answer_type": "entity",
+      "answer": [
+        "C1"
+      ],
+      "evidence_entities": [
+        "P8",
+        "C1",
+        "C3"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P8",
+            "C4"
+          ],
+          [
+            "C1",
+            "C4"
+          ],
+          [
+            "C1",
+            "C3"
+          ]
+        ],
+        [
+          [
+            "P8",
+            "C5"
+          ],
+          [
+            "C1",
+            "C5"
+          ],
+          [
+            "C1",
+            "C3"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_related_parties_fy2025"
+      ],
+      "priority": 83
+    },
+    {
+      "id": "Q27",
+      "type": "cross_doc",
+      "question": "Which person is a director of both Larkspur Castings and Harbourline Logistics?",
+      "answer_type": "entity",
+      "answer": [
+        "P1"
+      ],
+      "evidence_entities": [
+        "P1",
+        "C1",
+        "C3"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P1",
+            "C1",
+            "MANAGING_DIRECTOR_OF"
+          ],
+          [
+            "P1",
+            "C3",
+            "DIRECTOR_OF"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025",
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 14
+    },
+    {
+      "id": "Q28",
+      "type": "cross_doc",
+      "question": "Which director of Larkspur Castings also sits on the board of Larkspur Foundry Services?",
+      "answer_type": "entity",
+      "answer": [
+        "P3"
+      ],
+      "evidence_entities": [
+        "P3",
+        "C1",
+        "C4"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P3",
+            "C1",
+            "WHOLE_TIME_DIRECTOR_OF"
+          ],
+          [
+            "P3",
+            "C4",
+            "CHAIRPERSON_OF"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025",
+        "lfspl_board_minutes_may2025"
+      ],
+      "priority": 24
+    },
+    {
+      "id": "Q29",
+      "type": "cross_doc",
+      "question": "Which designated partner of Kestrel Alloys LLP is also a director of Harbourline Logistics?",
+      "answer_type": "entity",
+      "answer": [
+        "P1"
+      ],
+      "evidence_entities": [
+        "P1",
+        "C5",
+        "C3"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P1",
+            "C5",
+            "DESIGNATED_PARTNER_OF"
+          ],
+          [
+            "P1",
+            "C3",
+            "DIRECTOR_OF"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025",
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 34
+    },
+    {
+      "id": "Q30",
+      "type": "cross_doc",
+      "question": "Which audit partner leads the statutory audit of the company whose board meeting Rohan Pillai chaired on 22 May 2025?",
+      "answer_type": "entity",
+      "answer": [
+        "P6"
+      ],
+      "evidence_entities": [
+        "P6",
+        "C7",
+        "C4",
+        "P3"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P3",
+            "C4",
+            "CHAIRPERSON_OF"
+          ],
+          [
+            "C7",
+            "C4",
+            "AUDITOR_OF"
+          ],
+          [
+            "P6",
+            "C7",
+            "PARTNER_OF"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025",
+        "lfspl_board_minutes_may2025"
+      ],
+      "priority": 44
+    },
+    {
+      "id": "Q31",
+      "type": "cross_doc",
+      "question": "What is the DIN of the director who chaired the Larkspur Castings board meeting of 18 July 2025?",
+      "answer_type": "string",
+      "answer": "07410101",
+      "evidence_entities": [
+        "P1",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P1",
+            "C1",
+            "CHAIRPERSON_OF"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025",
+        "larkspur_board_minutes_jul2025"
+      ],
+      "priority": 54
+    },
+    {
+      "id": "Q32",
+      "type": "cross_doc",
+      "question": "How many shares of Larkspur Castings are held by its Managing Director?",
+      "answer_type": "number",
+      "answer": 1500000,
+      "evidence_entities": [
+        "P1",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P1",
+            "C1",
+            "MANAGING_DIRECTOR_OF"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025",
+        "larkspur_shareholding_mar2025"
+      ],
+      "priority": 64
+    },
+    {
+      "id": "Q33",
+      "type": "cross_doc",
+      "question": "How much alloy scrap, in INR per year, does the subsidiary chaired by Larkspur Castings' Chief Financial Officer buy from Kestrel Alloys?",
+      "answer_type": "number",
+      "answer": 2100000,
+      "evidence_entities": [
+        "P3",
+        "C4",
+        "C5"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P3",
+            "C1",
+            "CFO_OF"
+          ],
+          [
+            "P3",
+            "C4",
+            "CHAIRPERSON_OF"
+          ],
+          [
+            "C4",
+            "C5",
+            "PURCHASED_FROM"
+          ]
+        ]
+      ],
+      "min_documents": 2,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025",
+        "lfspl_board_minutes_may2025"
+      ],
+      "priority": 74
+    },
+    {
+      "id": "Q34",
+      "type": "list",
+      "question": "List all directors of Larkspur Castings Private Limited.",
+      "answer_type": "entity_list",
+      "answer": [
+        "P1",
+        "P2",
+        "P3",
+        "P7"
+      ],
+      "evidence_entities": [
+        "P1",
+        "P2",
+        "P3",
+        "P7",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P1",
+            "C1"
+          ],
+          [
+            "P2",
+            "C1"
+          ],
+          [
+            "P3",
+            "C1"
+          ],
+          [
+            "P7",
+            "C1"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 15
+    },
+    {
+      "id": "Q35",
+      "type": "list",
+      "question": "List the subsidiaries of Larkspur Castings.",
+      "answer_type": "entity_list",
+      "answer": [
+        "C3",
+        "C4"
+      ],
+      "evidence_entities": [
+        "C3",
+        "C4",
+        "C1"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C1",
+            "C3"
+          ],
+          [
+            "C1",
+            "C4"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_annual_report_fy2025"
+      ],
+      "priority": 25
+    },
+    {
+      "id": "Q36",
+      "type": "list",
+      "question": "List the directors of Harbourline Logistics.",
+      "answer_type": "entity_list",
+      "answer": [
+        "P1",
+        "P4"
+      ],
+      "evidence_entities": [
+        "P1",
+        "P4",
+        "C3"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P1",
+            "C3"
+          ],
+          [
+            "P4",
+            "C3"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "harbourline_annual_report_fy2025"
+      ],
+      "priority": 35
+    },
+    {
+      "id": "Q37",
+      "type": "list",
+      "question": "Which companies does Sen & Varma LLP audit?",
+      "answer_type": "entity_list",
+      "answer": [
+        "C1",
+        "C4"
+      ],
+      "evidence_entities": [
+        "C7",
+        "C1",
+        "C4"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "C7",
+            "C1"
+          ],
+          [
+            "C7",
+            "C4"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "sen_varma_engagement_letter"
+      ],
+      "priority": 45
+    },
+    {
+      "id": "Q38",
+      "type": "list",
+      "question": "List the designated partners of Kestrel Alloys LLP.",
+      "answer_type": "entity_list",
+      "answer": [
+        "P1",
+        "P8"
+      ],
+      "evidence_entities": [
+        "P1",
+        "P8",
+        "C5"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P1",
+            "C5"
+          ],
+          [
+            "P8",
+            "C5"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_related_parties_fy2025"
+      ],
+      "priority": 55
+    },
+    {
+      "id": "Q39",
+      "type": "list",
+      "question": "List the directors of Tern Capital.",
+      "answer_type": "entity_list",
+      "answer": [
+        "P7",
+        "P9"
+      ],
+      "evidence_entities": [
+        "P7",
+        "P9",
+        "C2"
+      ],
+      "evidence_paths": [
+        [
+          [
+            "P7",
+            "C2"
+          ],
+          [
+            "P9",
+            "C2"
+          ]
+        ]
+      ],
+      "min_documents": 1,
+      "documents_needed": [
+        "larkspur_shareholding_mar2025"
+      ],
+      "priority": 65
+    }
+  ]
+}
