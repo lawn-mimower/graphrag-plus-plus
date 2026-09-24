@@ -373,7 +373,8 @@ class KnowledgeGraphBuilder:
 
         merged['source_docs'] = list(source_docs)
         merged['page_numbers'] = sorted(list(page_nums))
-        merged['cluster_size'] = len(cluster_nodes)
+        # Nodes outside any duplicate cluster are not in node_mapping: size 1
+        merged['cluster_size'] = max(len(cluster_nodes), 1)
 
         # Add merge reasoning if available (from LLM methodologies)
         if cluster_reasoning and len(cluster_nodes) > 1:
