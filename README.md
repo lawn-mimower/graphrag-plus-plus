@@ -169,7 +169,7 @@ A sophisticated knowledge graph construction and query system that combines mult
 │             ▼                                                                │
 │  ┌──────────────────────────────┐                                          │
 │  │  Community Summarizer        │  Gemini-powered natural language         │
-│  │  (Gemini 2.0 Flash Lite)     │  summaries for each community            │
+│  │  (Gemini 2.5 Flash)          │  summaries for each community            │
 │  └──────────┬───────────────────┘                                          │
 │             │                                                                │
 │             ▼                                                                │
@@ -223,7 +223,7 @@ A sophisticated knowledge graph construction and query system that combines mult
 | **Probabilistic** | ML-based | Splink (EM algorithm) | Fuzzy matching, uncertain links |
 | **Topological** | Graph-based | NetworkX Jaccard similarity | Entities with shared relationships |
 | **Semantic** | Embedding | sentence-transformers + cosine similarity | Semantic equivalence, name variants |
-| **LLM Full Context** | LLM-powered | Gemini 2.5 Flash with agentic voting (8 candidates) | Complex disambiguation, reasoning |
+| **LLM Full Context** | LLM-powered | Gemini 2.5 Pro, whole graph in one prompt (`GEMINI_MODEL_DEDUP`) | Complex disambiguation, reasoning |
 
 ### 4. SQL-Based Knowledge Graph
 
@@ -308,9 +308,22 @@ GOOGLE_API_KEY=your_api_key_here
 
 # Optional: Logging
 LOG_LEVEL=INFO
+
+# Optional: model overrides (useful if a model is retired or has no quota
+# on your plan, e.g. gemini-2.5-pro on the free tier)
+# GEMINI_MODEL_HEAVY=gemini-2.5-flash
+# GEMINI_MODEL_DEDUP=gemini-2.5-pro
 ```
 
 **Get your API key from**: https://aistudio.google.com/app/apikey
+
+The key is only needed for the Gemini stages (entity extraction, LLM
+deduplication, community summaries, query planning). SQL conversion, Milvus
+ingestion and `scripts/run_leiden.py --skip-summaries` run without it.
+
+Milvus runs as **Milvus Lite** (a local `.db` file under `outputs/`); no
+Milvus server is required. LibreOffice is optional: when present, DOCX pages
+are rendered to images, otherwise DOCX files are processed as text only.
 
 ### Step 5: Initialize Database
 
@@ -349,9 +362,8 @@ This will:
 **3. Convert to SQL** (select best method):
 ```bash
 python kg_to_sql.py \
-  --method llm_full_context \
-  --graph outputs/knowledge_graphs/llm_full_context_graph.json \
-  --db knowledge_graph.db
+  --graph outputs/knowledge_graphs/dedup_llm_full_context_kg.gpickle \
+  --output knowledge_graph.db
 ```
 
 **4. Initialize vector search**:
@@ -393,12 +405,15 @@ Bakasur/
 │   ├── entities_extracted/
 │   │   └── your_document_entities.json
 │   ├── knowledge_graphs/
-│   │   ├── rswoosh_graph.json
-│   │   ├── probabilistic_graph.json
-│   │   ├── topological_graph.json
-│   │   ├── semantic_graph.json
-│   │   └── llm_full_context_graph.json
-│   └── milvus_orchestrator.db
+│   │   ├── non_dedup_kg.gpickle / .graphml
+│   │   ├── dedup_rswoosh_kg.gpickle / .graphml
+│   │   ├── dedup_probabilistic_kg.gpickle / .graphml
+│   │   ├── dedup_topological_kg.gpickle / .graphml
+│   │   ├── dedup_semantic_kg.gpickle / .graphml
+│   │   └── dedup_llm_full_context_kg.gpickle / .graphml
+│   ├── reasoning/                 # LLM merge reasoning (JSON)
+│   ├── benchmark_report_<timestamp>.json
+│   └── milvus_orchestrator.db     # Milvus Lite file (no server needed)
 └── knowledge_graph.db  # SQLite database
 ```
 
@@ -422,7 +437,7 @@ Phase 1 implements the complete pipeline from raw documents to a deduplicated kn
 | PDF (Scanned) | `.pdf` | PyMuPDF + RapidOCR | Yes |
 | Images | `.jpg`, `.jpeg`, `.png`, `.tiff` | PIL + RapidOCR | Yes |
 | Word Documents | `.docx` | python-docx + LibreOffice | Optional |
-| Excel Spreadsheets | `.xlsx`, `.xls` | pandas + PIL (custom renderer) | No (native extraction) |
+| Excel Spreadsheets | `.xlsx` | pandas + PIL (custom renderer) | No (native extraction) |
 
 **Usage**:
 
@@ -567,14 +582,14 @@ All 5 methodologies work on the raw knowledge graph and produce deduplicated ver
 - Cosine similarity on entity embeddings
 - Threshold: 0.9
 
-#### 1.4.5 LLM Full Context (Gemini with Agentic Voting)
+#### 1.4.5 LLM Full Context (Gemini)
 
 **File**: `src/methodologies/llm_full_context.py`
 
-1. Generate 8 candidate deduplication decisions (temperature=0.7)
-2. Each candidate votes: MERGE or KEEP_SEPARATE
-3. Majority threshold: 5/8 votes required to merge
-4. Reasoning captured for transparency
+1. The whole raw graph (entities, attributes, relationships) is sent in one prompt
+2. The model returns duplicate clusters with an analysis and a MERGE decision
+3. Model: `gemini-2.5-pro` by default, override with `GEMINI_MODEL_DEDUP`
+4. Reasoning is saved to `outputs/reasoning/` for transparency
 
 ### 1.5 Running the Full Pipeline
 
@@ -585,11 +600,12 @@ python main.py --dataset dataset/
 **Output**:
 ```
 outputs/knowledge_graphs/
-├── rswoosh_graph.json          # 60 nodes → 45 nodes (25% reduction)
-├── probabilistic_graph.json    # 60 nodes → 48 nodes (20% reduction)
-├── topological_graph.json      # 60 nodes → 50 nodes (17% reduction)
-├── semantic_graph.json         # 60 nodes → 42 nodes (30% reduction)
-└── llm_full_context_graph.json # 60 nodes → 40 nodes (33% reduction)
+├── non_dedup_kg.gpickle                 # raw graph, one node per mention
+├── dedup_rswoosh_kg.gpickle            # e.g. 60 nodes → 45 nodes
+├── dedup_probabilistic_kg.gpickle
+├── dedup_topological_kg.gpickle
+├── dedup_semantic_kg.gpickle
+└── dedup_llm_full_context_kg.gpickle   # (.graphml copies alongside)
 ```
 
 ---
@@ -618,9 +634,8 @@ outputs/knowledge_graphs/
 
 ```bash
 python kg_to_sql.py \
-  --method llm_full_context \
-  --graph outputs/knowledge_graphs/llm_full_context_graph.json \
-  --db knowledge_graph.db
+  --graph outputs/knowledge_graphs/dedup_llm_full_context_kg.gpickle \
+  --output knowledge_graph.db
 ```
 
 ### 2.3 Milvus Vector Database
@@ -709,7 +724,7 @@ python scripts/run_leiden.py --force
 
 **Component**: `src/community_summarizer.py`
 
-Uses Gemini 2.0 Flash Lite to generate natural language summaries for each community.
+Uses Gemini (`MODEL_HEAVY`, gemini-2.5-flash by default) to generate natural language summaries for each community.
 
 ```python
 from src.community_summarizer import CommunitySummarizer
@@ -889,8 +904,8 @@ cp *.pdf dataset/
 # 2. Run entity extraction & deduplication
 python main.py --dataset dataset/
 
-# 3. Convert to SQL
-python kg_to_sql.py --method llm_full_context --graph ... --db knowledge_graph.db
+# 3. Convert to SQL (pick one deduplicated graph)
+python kg_to_sql.py --graph outputs/knowledge_graphs/dedup_llm_full_context_kg.gpickle --output knowledge_graph.db
 
 # 4. Initialize Milvus
 python init_and_ingest.py
@@ -898,8 +913,8 @@ python init_and_ingest.py
 # 5. Build communities
 python scripts/run_leiden.py
 
-# 6. Query
-python test_orchestrator.py
+# 6. Query (runs a demo query; see the Python API above for your own)
+python -m src.orchestrator
 ```
 
 ### Workflow 2: Benchmark Methods
@@ -921,7 +936,7 @@ python main.py [--dataset PATH] [--config] [--log-level LEVEL]
 ### kg_to_sql.py - Convert Graph to SQL
 
 ```bash
-python kg_to_sql.py --method METHOD --graph PATH --db PATH
+python kg_to_sql.py --graph PATH_TO_GPICKLE [--output knowledge_graph.db]
 ```
 
 ### scripts/run_leiden.py - Community Detection
@@ -935,15 +950,19 @@ python scripts/run_leiden.py [--force] [--skip-summaries] [--check-only]
 ## Testing
 
 ```bash
-# Test parser
-python test_rapidocr_parser.py
+pip install -r requirements.txt
 
-# Test orchestrator
-python test_orchestrator.py
+# Offline suite: no API key or network needed (Gemini and the embedding
+# model are replaced by fakes; Milvus Lite and SQLite use temp files)
+python -m pytest
 
-# Run test suite
-cd tests/ && python -m pytest
+# Live end-to-end test (two Gemini calls); skipped when GOOGLE_API_KEY is unset
+python -m pytest -m e2e
 ```
+
+The tests use small synthetic documents for a fictional company in
+`tests/fixtures/` (PDF, DOCX, XLSX, PNG). Rebuild them with
+`python tests/fixtures/make_fixtures.py`.
 
 ---
 

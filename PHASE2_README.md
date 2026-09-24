@@ -33,11 +33,9 @@ Milvus database at: ./outputs/milvus_orchestrator.db
 ### 2. Test the Orchestrator
 
 ```bash
-source ~/anaconda3/bin/activate ml-env
-python test_orchestrator.py
+python -m src.orchestrator          # runs a demo query against knowledge_graph.db
+python -m pytest tests/test_query.py
 ```
-
-This runs sample queries to verify everything works correctly.
 
 ---
 
@@ -205,7 +203,7 @@ result = orchestrator.process_query(
 | `src/orchestrator.py` | Main QueryOrchestrator class |
 | `src/milvus_ingestion.py` | Milvus ingestion engine |
 | `init_and_ingest.py` | Database initialization script |
-| `test_orchestrator.py` | Test suite |
+| `tests/test_query.py` | Test suite |
 
 ---
 

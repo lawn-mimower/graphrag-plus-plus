@@ -19,7 +19,7 @@ The document parsing system has been upgraded from **Mineru** to **RapidOCR** wi
 | PDF (scanned) | `.pdf` | ✅ Supported (OCR) |
 | Images | `.jpg`, `.jpeg`, `.png`, `.tiff` | ✅ Supported (OCR) |
 | Word Documents | `.docx` | ✅ Supported |
-| Excel Spreadsheets | `.xlsx`, `.xls` | ✅ Supported |
+| Excel Spreadsheets | `.xlsx` | ✅ Supported |
 
 ### 3. **Gemini Integration Strategy (Option D)**
 
@@ -96,7 +96,7 @@ python main.py --dataset dataset/
 
 ```bash
 # Run comprehensive tests
-python test_rapidocr_parser.py
+python -m pytest tests/test_parsers.py
 
 # Tests include:
 # - Parser initialization
@@ -200,7 +200,7 @@ information in the images over the OCR text.
 
 ### New Files
 - `src/rapidocr_parser.py` - Universal document parser
-- `test_rapidocr_parser.py` - Comprehensive test suite
+- `tests/test_parsers.py` - Parser tests on synthetic fixtures
 - `RAPIDOCR_MIGRATION_GUIDE.md` - This guide
 
 ### Modified Files
@@ -258,7 +258,7 @@ Gemini's vision understands layout and will extract correctly.
 ## Migration Checklist
 
 - [ ] Install updated dependencies: `pip install -r requirements.txt`
-- [ ] Run tests: `python test_rapidocr_parser.py`
+- [ ] Run tests: `python -m pytest tests/test_parsers.py`
 - [ ] Test with your documents: Place samples in `dataset/`
 - [ ] Run full pipeline: `python main.py --dataset dataset/`
 - [ ] Verify entity extraction quality
@@ -320,7 +320,7 @@ TEXT_QUALITY_THRESHOLD = 0.6  # Flag low quality text
 
 ## Next Steps
 
-1. **Test with your documents**: Run `python test_rapidocr_parser.py`
+1. **Test with your documents**: Run `python -m pytest tests/test_parsers.py`
 2. **Process a sample dataset**: `python main.py --dataset dataset/`
 3. **Review entity extraction quality**: Check `outputs/entities_extracted/`
 4. **Fine-tune thresholds**: Adjust `OCR_CONFIDENCE_THRESHOLD` if needed
@@ -330,7 +330,7 @@ TEXT_QUALITY_THRESHOLD = 0.6  # Flag low quality text
 
 ## Questions?
 
-- Check the test script: `test_rapidocr_parser.py`
+- Check the tests: `tests/test_parsers.py`
 - Review the parser code: `src/rapidocr_parser.py`
 - See entity extractor changes: `src/entity_extractor.py`
 
