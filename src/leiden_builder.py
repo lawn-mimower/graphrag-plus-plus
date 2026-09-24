@@ -119,7 +119,7 @@ class LeidenCommunityBuilder:
 
         # Step 5: Store results in database
         logger.info("\nStep 5: Storing communities in database...")
-        self._store_communities(community_results, resolutions, metrics)
+        self._store_communities(community_results, resolutions, metrics, time.time() - start_time)
 
         # Step 6: Calculate statistics
         computation_time = time.time() - start_time
@@ -304,7 +304,8 @@ class LeidenCommunityBuilder:
         self,
         community_results: Dict[str, Dict[str, int]],
         resolutions: Dict[str, float],
-        metrics: Dict[str, Any]
+        metrics: Dict[str, Any],
+        computation_time: float = None
     ):
         """
         Store community detection results in database.
@@ -313,6 +314,7 @@ class LeidenCommunityBuilder:
             community_results: Dict of level -> {entity_id: community_id}
             resolutions: Dict of level -> γ value
             metrics: Graph metrics dictionary
+            computation_time: Seconds spent computing the communities
         """
         conn = sqlite3.connect(self.db_path)
         try:
@@ -348,7 +350,7 @@ class LeidenCommunityBuilder:
                 metrics['clustering_coefficient'],
                 metrics['connected_components'],
                 json.dumps(resolutions),
-                time.time()
+                computation_time
             ))
 
             conn.commit()
