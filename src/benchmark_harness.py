@@ -171,6 +171,10 @@ class BenchmarkHarness:
                         attrs = entity.get('attributes', {})
                         if 'page_number' in attrs:
                             page_numbers.append(attrs['page_number'])
+                        pages = attrs.get('page_numbers')
+                        if isinstance(pages, list):
+                            page_numbers.extend(p for p in pages if isinstance(p, int))
+                    page_numbers = sorted(set(page_numbers))
 
                     self.kg_builder.add_entities(
                         entities,

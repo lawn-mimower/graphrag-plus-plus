@@ -119,7 +119,8 @@ INSTRUCTIONS:
       "attributes": {
         "name": "...",
         "role": "...",
-        "other_field": "..."
+        "other_field": "...",
+        "page_numbers": [1]
       }
     }
   ],
@@ -136,7 +137,7 @@ INSTRUCTIONS:
 IMPORTANT:
 - Assign unique IDs to each entity (e.g., "PERSON_001", "COMPANY_001")
 - Extract ALL available attributes (don't limit to a fixed schema)
-- Include page numbers where entities are mentioned
+- Include the page numbers where each entity is mentioned as a list in attributes.page_numbers
 - Be thorough - extract every person, company, and organization mentioned
 
 Now process the following pages:

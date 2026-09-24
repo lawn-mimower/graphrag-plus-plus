@@ -21,6 +21,14 @@ class KnowledgeGraphBuilder:
     Supports both non-deduplicated and deduplicated graph construction.
     """
 
+    # Node/edge metadata set by the builder. Extracted attributes with the same
+    # key are kept under an "attr_" prefix instead of overwriting them.
+    RESERVED_NODE_KEYS = {
+        'original_id', 'type', 'source_doc', 'source_docs',
+        'page_numbers', 'cluster_size', 'merge_reasoning'
+    }
+    RESERVED_EDGE_KEYS = {'relationship_type', 'source_doc', 'source_docs'}
+
     def __init__(self):
         """Initialize the Knowledge Graph Builder."""
         self.graph = nx.DiGraph()  # Directed graph for relationships
@@ -58,13 +66,25 @@ class KnowledgeGraphBuilder:
             id_mapping[original_id] = internal_id
 
             # Add node with all attributes
+            attributes = dict(entity.get('attributes') or {})
+
+            # Pages reported for this entity take precedence over document-level pages
+            entity_pages = attributes.pop('page_numbers', None)
+            if isinstance(entity_pages, int):
+                entity_pages = [entity_pages]
+            if not isinstance(entity_pages, list) or not entity_pages:
+                entity_pages = page_numbers or []
+
             node_attrs = {
+                (f"attr_{k}" if k in self.RESERVED_NODE_KEYS else k): v
+                for k, v in attributes.items()
+            }
+            node_attrs.update({
                 'original_id': original_id,
                 'type': entity.get('type', 'Unknown'),
                 'source_doc': source_doc,
-                'page_numbers': page_numbers or [],
-                **entity.get('attributes', {})
-            }
+                'page_numbers': entity_pages,
+            })
 
             self.graph.add_node(internal_id, **node_attrs)
 
@@ -80,10 +100,13 @@ class KnowledgeGraphBuilder:
 
             if from_internal and to_internal:
                 edge_attrs = {
+                    (f"attr_{k}" if k in self.RESERVED_EDGE_KEYS else k): v
+                    for k, v in (rel.get('attributes') or {}).items()
+                }
+                edge_attrs.update({
                     'relationship_type': rel_type,
                     'source_doc': source_doc,
-                    **rel.get('attributes', {})
-                }
+                })
                 self.graph.add_edge(from_internal, to_internal, **edge_attrs)
 
         logger.info(
