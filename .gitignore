@@ -65,3 +65,7 @@ mineru_temp/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Benchmark work files and LLM response cache
+benchmarks/.work/
+benchmarks/.cache/
