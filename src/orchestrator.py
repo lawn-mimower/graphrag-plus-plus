@@ -357,8 +357,8 @@ Now, analyze the query and the provided context and generate the JSON plan.
             return True
         mode = intent.get("query_mode")
         if mode == "laser":
-            source = intent.get("source_entity", {})
-            target = intent.get("target_entity", {})
+            source = (intent.get("source_entity") or {})
+            target = (intent.get("target_entity") or {})
             return not all([source.get("id"), target.get("id")])
         elif mode == "flashlight":
             return not any([
