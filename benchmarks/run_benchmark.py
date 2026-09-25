@@ -553,6 +553,10 @@ def run_unit(run, system, q, orchestrators, rag, full_text):
         }
         if nodes:
             context = serialize_graph_context(result)
+        elif result.get("passages"):
+            record["graph"]["text_fallback"] = True
+            context = "Passages from the documents:\n" + "\n\n".join(
+                f"[{p['document']}] {p['text']}" for p in result["passages"])
     elif system == "rag":
         ids = rag.dense_top_k(q["question"], run.args.top_k)
         bm25_ids = rag.bm25_top_k(q["question"], run.args.top_k)
@@ -603,6 +607,8 @@ def task_qa(run):
         questions = questions[:args.limit_questions]
 
     orchestrators = {}
+    from src.text_fallback import TextFallbackIndex
+    text_fallback_index = TextFallbackIndex(run.baseline_texts())
     if any(s.startswith("graphrag") for s in systems):
         build_graphrag_index(run)
         from src.orchestrator import QueryOrchestrator
@@ -614,6 +620,7 @@ def task_qa(run):
                     db_path=str(run.work / f"{gname}.db"),
                     milvus_path=str(run.work / f"{gname}_milvus.db"),
                     gemini_model=run.plan_spec.model)
+                orchestrators[gname].text_index = text_fallback_index
     _quiet_logs()
 
     texts = run.baseline_texts()
@@ -717,6 +724,7 @@ def aggregate_qa(state, truth, index):
                 "evidence_recall": _r(_mean(x["evidence_recall"] for x in g)),
                 "mean_nodes": round(_mean(x["nodes"] for x in g)),
                 "answer_calls_skipped": sum(bool(r.get("skipped_answer_call")) for r in recs),
+                "text_fallbacks": sum(bool(x.get("text_fallback")) for x in g),
             }
         if s == "rag":
             b = [r["retrieval"]["bm25_same_k"] for r in recs]

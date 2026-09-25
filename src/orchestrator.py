@@ -15,6 +15,7 @@ from google import genai
 from src.config import Config
 from src.inference_engine import SecureGraphTraverser
 from src.milvus_ingestion import MilvusIngestionEngine
+from src.text_fallback import TextFallbackIndex
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,8 @@ class QueryOrchestrator:
         db_path: str = "knowledge_graph.db",
         milvus_path: str = "./outputs/milvus_orchestrator.db",
         gemini_model: str = None
-    ):
+    ,
+        text_index: Optional[TextFallbackIndex] = None):
         """
         Initialize the Query Orchestrator.
         """
@@ -54,10 +56,52 @@ class QueryOrchestrator:
             milvus_path=self.milvus_path
         )
         self.traverser = SecureGraphTraverser(db_path=str(self.db_path))
+        # Fallback route: BM25 over the parsed document text, used when the graph cannot answer.
+        self.text_index: Optional[TextFallbackIndex] = text_index
+        if self.text_index is None and Config.PARSED_DOCS_DIR.exists() and any(Config.PARSED_DOCS_DIR.iterdir()):
+            try:
+                self.text_index = TextFallbackIndex.from_directory(Config.PARSED_DOCS_DIR)
+            except Exception as e:
+                logger.warning(f"Text fallback index not built: {e}")
 
         logger.info(f"QueryOrchestrator initialized with model: {self.gemini_model_name}")
 
     def process_query(
+        self,
+        user_query: str,
+        user_tags: List[str],
+        max_depth: int = 2,
+        similarity_threshold: float = 0.1,
+        max_candidates_per_entity: int = 5,
+        max_type_results: int = 20,
+        fallback_passages: int = 5
+    ) -> Dict[str, Any]:
+        """
+        Answer a query from the graph; when the graph has nothing, fall back to passages.
+
+        The graph route is tried first. If intent extraction finds no usable entities
+        (``ambiguous``) or the traversal returns no nodes and no edges, and a text index
+        is available, the query is run against BM25 over the parsed documents and the
+        top passages are returned with ``status: text_fallback``. Access-control
+        refusals (``no_access``) are never bypassed.
+        """
+        result = self._graph_query(user_query, user_tags, max_depth, similarity_threshold,
+                                   max_candidates_per_entity, max_type_results)
+        status = result.get("status")
+        graph_empty = status == "success" and not result.get("nodes") and not result.get("mini_graph")
+        if self.text_index is None or status not in ("ambiguous", "error") and not graph_empty:
+            return result
+        passages = self.text_index.search(user_query, k=fallback_passages)
+        if not passages:
+            return result
+        logger.info(f"Graph route returned '{status}' with no context; falling back to {len(passages)} passages")
+        return {
+            "status": "text_fallback", "graph_status": status, "intent": result.get("intent"),
+            "candidates": [], "nodes": {}, "mini_graph": [], "passages": passages,
+            "message": f"The graph had no answer ({status}); returned {len(passages)} passages from text retrieval.",
+        }
+
+    def _graph_query(
         self,
         user_query: str,
         user_tags: List[str],
