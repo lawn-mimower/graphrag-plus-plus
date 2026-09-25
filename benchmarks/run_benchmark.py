@@ -69,7 +69,7 @@ from benchmarks.llm import (BudgetExhausted, GenAIShim, LLMBackend, ModelSpec,  
 log = logging.getLogger("benchmark")
 
 SYSTEMS = ["graphrag", "rag", "full_context"]
-DEDUP_METHODS = ["rswoosh", "probabilistic", "topological", "semantic", "llm_full_context"]
+DEDUP_METHODS = ["rswoosh", "probabilistic", "topological", "semantic", "llm_full_context", "fuzzy"]
 ANSWER_TEMPERATURE = 0.0
 ANSWER_MAX_TOKENS = 2048
 USER_TAGS = ["UNCLASSIFIED"]
@@ -242,6 +242,7 @@ def run_dedup_methods(graph, run, llm_spec, purpose, methods=DEDUP_METHODS):
     from src.methodologies.llm_full_context import LLMFullContextDeduplicator
     from src.methodologies.probabilistic import ProbabilisticDeduplicator
     from src.methodologies.rswoosh import RSwooshDeduplicator
+    from src.methodologies.fuzzy import FuzzyDeduplicator
     from src.methodologies.semantic import SemanticDeduplicator
     from src.methodologies.topological import TopologicalDeduplicator
 
@@ -260,7 +261,8 @@ def run_dedup_methods(graph, run, llm_spec, purpose, methods=DEDUP_METHODS):
                 entry["reasoning"] = details
             else:
                 cls = {"rswoosh": RSwooshDeduplicator, "probabilistic": ProbabilisticDeduplicator,
-                       "topological": TopologicalDeduplicator, "semantic": SemanticDeduplicator}[name]
+                       "topological": TopologicalDeduplicator, "semantic": SemanticDeduplicator,
+                       "fuzzy": FuzzyDeduplicator}[name]
                 clusters = cls().deduplicate(graph)
         except Exception as exc:  # the harness also carries on after a failed method
             log.exception("dedup method %s failed", name)
@@ -896,6 +898,7 @@ def _fmt(x, nd=3):
 def report(paths):
     method_label = {"rswoosh": "R-Swoosh", "probabilistic": "Splink", "topological": "Topological",
                     "semantic": "Semantic (Milvus)", "llm_full_context": "LLM full-context",
+                    "fuzzy": "Fuzzy (normalised names, token_sort_ratio ≥ 90)",
                     "exact_normalised": "Baseline: exact after normalisation",
                     "fuzzy_token_sort_90": "Baseline: fuzzy token_sort_ratio ≥ 90"}
     for path in paths:
