@@ -4,7 +4,7 @@ Sends entire entity extraction JSON to identify duplicates in one shot.
 """
 
 import logging
-from typing import Set, List, Dict, Any
+from typing import Optional, Set, List, Dict, Any
 import networkx as nx
 from google import genai
 import json
@@ -20,7 +20,7 @@ class LLMFullContextDeduplicator:
     Sends all entities and relationships at once for holistic analysis.
     """
 
-    def __init__(self, client: genai.Client = None):
+    def __init__(self, client: genai.Client = None, batch_size: int = 30):
         """
         Initialize LLM Full-Context deduplicator.
 
@@ -29,10 +29,18 @@ class LLMFullContextDeduplicator:
         """
         self.client = client or genai.Client(api_key=Config.GOOGLE_API_KEY)
         self.model_name = Config.MODEL_DEDUP  # Pro model by default for complex reasoning
+        self.batch_size = batch_size  # entities per LLM call; batches are formed within an entity type
+        self.failed_batches = 0
 
     def deduplicate(self, graph: nx.DiGraph) -> List[Set[str]]:
         """
-        Perform full-context LLM deduplication on the knowledge graph.
+        Perform LLM deduplication on the knowledge graph.
+
+        Entities are sent to the model in batches of at most ``batch_size``, formed
+        within each entity type (duplicates never span types). When a type needs more
+        than one batch, a reconciliation pass is run over one representative per
+        cluster so duplicates split across batches are still merged. Graphs with at
+        most ``batch_size`` entities are sent in a single call, as before.
 
         Args:
             graph: Input knowledge graph
@@ -40,47 +48,47 @@ class LLMFullContextDeduplicator:
         Returns:
             List of duplicate clusters (sets of node IDs)
         """
-        logger.info("Running Full-Context LLM (Gemini 2.5 Pro) deduplication")
+        return self._result_to_clusters(self.deduplicate_with_details(graph))
 
-        # Convert graph to JSON format
-        entities_json = self._graph_to_json(graph)
-
-        # Build the deduplication prompt
+    def _call_model(self, entities_json: Dict[str, Any], label: str) -> Dict[str, Any]:
+        """One deduplication call over ``entities_json``; empty result on failure."""
         prompt = self._build_deduplication_prompt(entities_json)
-
-        # Call Gemini
-        logger.info("Sending full context to Gemini 2.5 Pro...")
         try:
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=[prompt],
                 config=genai.types.GenerateContentConfig(
                     temperature=0.1,  # Low temperature for consistency
-                    max_output_tokens=16384,  # Large output for detailed analysis
+                    max_output_tokens=16384,
                 )
             )
-
-            response_text = response.text
-
-            if not response_text:
-                logger.error("Empty response from Gemini")
-                return []
-
-            logger.debug(f"Received response ({len(response_text)} chars)")
-
-            # Parse the response JSON
+            response_text = getattr(response, "text", None) or ""
+            if not response_text.strip():
+                logger.error(f"Empty deduplication reply for {label}")
+                self.failed_batches += 1
+                return {"duplicates": []}
             result = self._parse_deduplication_response(response_text)
-
-            # Convert to cluster format
-            clusters = self._result_to_clusters(result)
-
-            logger.info(f"Found {len(clusters)} duplicate clusters using full-context LLM")
-
-            return clusters
-
+            if result is None:
+                logger.error(f"Unparseable deduplication reply for {label}")
+                self.failed_batches += 1
+                return {"duplicates": []}
+            return result
         except Exception as e:
-            logger.error(f"Error in LLM deduplication: {e}", exc_info=True)
-            return []
+            logger.error(f"Error in LLM deduplication for {label}: {e}", exc_info=True)
+            self.failed_batches += 1
+            return {"duplicates": []}
+
+    @staticmethod
+    def _subset(entities_json: Dict[str, Any], ids: Set[str]) -> Dict[str, Any]:
+        return {
+            "entities": [e for e in entities_json["entities"] if e["id"] in ids],
+            "relationships": [r for r in entities_json["relationships"]
+                              if r["from_id"] in ids and r["to_id"] in ids],
+        }
+
+    @staticmethod
+    def _batches(items: List[Any], size: int) -> List[List[Any]]:
+        return [items[k:k + size] for k in range(0, len(items), size)] or [[]]
 
     def _graph_to_json(self, graph: nx.DiGraph) -> Dict[str, Any]:
         """
@@ -188,48 +196,35 @@ Now analyze the knowledge graph and identify all duplicates:
 """
         return prompt
 
-    def _parse_deduplication_response(self, response_text: str) -> Dict[str, Any]:
+    def _parse_deduplication_response(self, response_text: str) -> Optional[Dict[str, Any]]:
         """
-        Parse the LLM response to extract deduplication results.
-
-        Args:
-            response_text: Raw LLM response
-
-        Returns:
-            Parsed deduplication result
+        Parse the LLM reply. Markdown fences are stripped; a reply that is not strict
+        JSON (trailing commas, a truncated ending) is repaired with ``json_repair``.
+        Returns None when no object can be recovered.
         """
+        json_str = response_text.strip()
+        if "```json" in json_str:
+            json_str = json_str.split("```json")[1].split("```")[0]
+        elif "```" in json_str:
+            json_str = json_str.split("```")[1].split("```")[0]
+        json_str = json_str.strip()
         try:
-            # Remove markdown code blocks if present
-            json_str = response_text.strip()
-
-            if "```json" in json_str:
-                json_str = json_str.split("```json")[1].split("```")[0]
-            elif "```" in json_str:
-                json_str = json_str.split("```")[1].split("```")[0]
-
-            # Parse JSON
-            result = json.loads(json_str.strip())
-
-            # Validate structure
-            if "duplicates" not in result:
-                logger.warning("Response missing 'duplicates' field")
-                result["duplicates"] = []
-
-            return result
-
+            result = json.loads(json_str)
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON response: {e}")
-            logger.debug(f"Response text: {response_text[:1000]}...")
-
-            # Return empty result
-            return {
-                "duplicates": [],
-                "summary": {
-                    "total_entities": 0,
-                    "total_duplicates_found": 0,
-                    "total_clusters": 0
-                }
-            }
+            logger.warning(f"Deduplication reply is not strict JSON ({e}); attempting repair")
+            try:
+                from json_repair import loads as repair_loads
+                result = repair_loads(json_str)
+            except Exception as repair_error:
+                logger.error(f"JSON repair failed: {repair_error}")
+                logger.debug(f"Response text: {response_text[:1000]}...")
+                return None
+        if not isinstance(result, dict):
+            return None
+        if not isinstance(result.get("duplicates"), list):
+            logger.warning("Response missing 'duplicates' field")
+            result["duplicates"] = []
+        return result
 
     def _result_to_clusters(self, result: Dict[str, Any]) -> List[Set[str]]:
         """
@@ -261,35 +256,91 @@ Now analyze the knowledge graph and identify all duplicates:
             graph: Input knowledge graph
 
         Returns:
-            Full deduplication result with analysis
+            Full deduplication result: ``duplicates`` (cluster groups with the model's
+            reasoning), ``summary`` and ``batches`` (number of LLM calls made)
         """
-        logger.info("Running Full-Context LLM deduplication with detailed output")
-
         entities_json = self._graph_to_json(graph)
-        prompt = self._build_deduplication_prompt(entities_json)
+        entities = entities_json["entities"]
+        self.failed_batches = 0
+        groups: List[Dict[str, Any]] = []
+        calls = 0
 
-        try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=[prompt],
-                config=genai.types.GenerateContentConfig(
-                    temperature=0.1,
-                    max_output_tokens=16384,
-                )
-            )
+        if len(entities) <= self.batch_size:
+            logger.info(f"Running full-context LLM deduplication over {len(entities)} entities in one call")
+            groups.extend(self._call_model(entities_json, "all entities").get("duplicates", []))
+            calls += 1
+        else:
+            by_type: Dict[str, List[Dict[str, Any]]] = {}
+            for e in entities:
+                by_type.setdefault(e.get("type", "Unknown"), []).append(e)
+            logger.info(f"Running batched LLM deduplication: {len(entities)} entities, "
+                        f"{len(by_type)} types, batches of {self.batch_size}")
+            for etype, members in by_type.items():
+                batches = self._batches(members, self.batch_size)
+                type_groups: List[Dict[str, Any]] = []
+                for n, batch in enumerate(batches, 1):
+                    ids = {e["id"] for e in batch}
+                    result = self._call_model(self._subset(entities_json, ids), f"{etype} batch {n}/{len(batches)}")
+                    calls += 1
+                    type_groups.extend(g for g in result.get("duplicates", []) if len(g.get("entities", [])) > 1)
+                if len(batches) > 1:
+                    # Reconciliation: one representative per cluster plus the singletons, so
+                    # duplicates that landed in different batches can still be merged. Repeated
+                    # until the representatives fit in one call or a pass finds nothing new.
+                    for round_no in range(1, 4):
+                        clustered = {eid for g in type_groups for eid in g["entities"]}
+                        reps = {g["entities"][0] for g in type_groups} | {e["id"] for e in members if e["id"] not in clustered}
+                        rep_batches = self._batches(sorted(reps), self.batch_size)
+                        found_before = len(type_groups)
+                        for n, batch in enumerate(rep_batches, 1):
+                            result = self._call_model(self._subset(entities_json, set(batch)),
+                                                      f"{etype} reconciliation {round_no}.{n}")
+                            calls += 1
+                            type_groups.extend(g for g in result.get("duplicates", []) if len(g.get("entities", [])) > 1)
+                        if len(rep_batches) == 1 or len(type_groups) == found_before:
+                            break
+                        type_groups = self._merge_groups(type_groups)
+                groups.extend(type_groups)
 
-            response_text = response.text
+        merged = self._merge_groups(groups)
+        return {
+            "duplicates": merged,
+            "summary": {
+                "total_entities": len(entities),
+                "total_duplicates_found": sum(len(g["entities"]) for g in merged),
+                "total_clusters": len(merged),
+            },
+            "batches": calls,
+            "failed_batches": self.failed_batches,
+        }
 
-            if not response_text:
-                return {"duplicates": [], "summary": {}}
+    @staticmethod
+    def _merge_groups(groups: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Union-find over the model's groups: a group from one call may overlap another's."""
+        parent: Dict[str, str] = {}
 
-            result = self._parse_deduplication_response(response_text)
+        def find(x: str) -> str:
+            while parent.setdefault(x, x) != x:
+                parent[x] = parent[parent[x]]
+                x = parent[x]
+            return x
 
-            return result
-
-        except Exception as e:
-            logger.error(f"Error in detailed deduplication: {e}", exc_info=True)
-            return {"duplicates": [], "summary": {}}
+        for g in groups:
+            ids = [i for i in g.get("entities", []) if isinstance(i, str)]
+            for other in ids[1:]:
+                parent[find(ids[0])] = find(other)
+        clusters: Dict[str, List[str]] = {}
+        for eid in parent:
+            clusters.setdefault(find(eid), []).append(eid)
+        reasoning: Dict[str, Any] = {}
+        for g in groups:
+            for eid in g.get("entities", []):
+                reasoning.setdefault(find(eid), {k: v for k, v in g.items() if k != "entities"})
+        out = []
+        for n, (root, members) in enumerate(sorted(clusters.items(), key=lambda kv: sorted(kv[1])), 1):
+            if len(members) > 1:
+                out.append({**reasoning.get(root, {}), "cluster_id": n, "entities": sorted(members)})
+        return out
 
     def get_methodology_name(self) -> str:
         """Get the name of this methodology."""
