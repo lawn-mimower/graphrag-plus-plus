@@ -5,7 +5,7 @@ Extracts entities and relationships from (page_image, page_text) pairs.
 
 import logging
 import json
-from typing import List, Tuple, Dict, Any
+from typing import Optional, List, Tuple, Dict, Any
 from pathlib import Path
 from PIL import Image
 from google import genai
@@ -33,6 +33,7 @@ class MultimodalEntityExtractor:
         self.client = client
         self.token_manager = token_manager
         self.model_name = Config.MODEL_HEAVY
+        self.failed_documents: List[str] = []  # chunks whose extraction failed after a retry
 
     def extract_entities(
         self,
@@ -127,6 +128,12 @@ This approach prevents hallucination and ensures accurate entity extraction.
         """
         Extract entities from a single content chunk.
 
+        The model is called at most twice. A second call is made when the first
+        reply is empty, is not valid JSON even after repair, or contains no entities
+        although the chunk holds a substantial amount of text. The retry appends an
+        instruction to return only the JSON object. If both attempts fail the chunk is
+        recorded in ``failed_documents`` and an empty result is returned.
+
         Args:
             chunk_content: List of content parts (instruction + images + text)
             doc_name: Document name for logging
@@ -134,50 +141,51 @@ This approach prevents hallucination and ensures accurate entity extraction.
         Returns:
             Extraction result dictionary
         """
-        try:
-            logger.debug(f"Calling Gemini API for {doc_name}")
-
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=chunk_content,
-                config=genai.types.GenerateContentConfig(
-                    temperature=0.1,  # Low temperature for factual extraction
-                    max_output_tokens=65536,
+        text_chars = sum(len(getattr(part, "text", "") or "") for part in chunk_content[1:])
+        contents = list(chunk_content)
+        last_error = "empty reply"
+        for attempt in (1, 2):
+            try:
+                logger.debug(f"Calling the model for {doc_name} (attempt {attempt})")
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=contents,
+                    config=genai.types.GenerateContentConfig(
+                        temperature=0.1,  # Low temperature for factual extraction
+                        max_output_tokens=65536,
+                    )
                 )
-            )
+                response_text = getattr(response, "text", None) or ""
+                if response_text.strip():
+                    result = self._parse_extraction_response(response_text)
+                    if result is None:
+                        last_error = "reply was not valid JSON"
+                    elif not result["entities"] and text_chars >= 200:
+                        last_error = "no entities from a chunk with substantial text"
+                    else:
+                        return result
+                else:
+                    last_error = "empty reply"
+                    self._log_empty_response(response, doc_name)
+            except Exception as e:
+                last_error = f"{type(e).__name__}: {e}"
+                logger.error(f"Error extracting entities from {doc_name}: {e}", exc_info=True)
+            if attempt == 1:
+                logger.warning(f"Extraction for {doc_name} failed ({last_error}); retrying once")
+                contents = list(chunk_content) + [genai.types.Part(
+                    text="Return only the JSON object described above, with no text before or after it.")]
+        logger.error(f"Extraction failed for {doc_name} after 2 attempts: {last_error}")
+        self.failed_documents.append(doc_name)
+        return {"entities": [], "relationships": []}
 
-            # Check for blocked or empty responses
-            if not response or not hasattr(response, 'text'):
-                logger.error(f"Invalid response from Gemini for {doc_name}")
-                logger.debug(f"Response object: {response}")
-                return {"entities": [], "relationships": []}
-
-            # Parse the response
-            response_text = response.text
-
-            if response_text is None or response_text.strip() == "":
-                logger.error(f"Gemini returned empty/None response for {doc_name}")
-                # Check if response was blocked
-                if hasattr(response, 'prompt_feedback'):
-                    logger.error(f"Prompt feedback: {response.prompt_feedback}")
-                if hasattr(response, 'candidates') and response.candidates:
-                    for candidate in response.candidates:
-                        if hasattr(candidate, 'finish_reason'):
-                            logger.error(f"Finish reason: {candidate.finish_reason}")
-                        if hasattr(candidate, 'safety_ratings'):
-                            logger.error(f"Safety ratings: {candidate.safety_ratings}")
-                return {"entities": [], "relationships": []}
-
-            logger.debug(f"Received response ({len(response_text)} chars)")
-
-            # Extract JSON from response
-            result = self._parse_extraction_response(response_text)
-
-            return result
-
-        except Exception as e:
-            logger.error(f"Error extracting entities from {doc_name}: {e}", exc_info=True)
-            return {"entities": [], "relationships": []}
+    @staticmethod
+    def _log_empty_response(response: Any, doc_name: str) -> None:
+        logger.error(f"Model returned an empty response for {doc_name}")
+        if getattr(response, "prompt_feedback", None):
+            logger.error(f"Prompt feedback: {response.prompt_feedback}")
+        for candidate in getattr(response, "candidates", None) or []:
+            if getattr(candidate, "finish_reason", None):
+                logger.error(f"Finish reason: {candidate.finish_reason}")
 
     def _extract_from_multiple_chunks(
         self,
@@ -227,44 +235,37 @@ This approach prevents hallucination and ensures accurate entity extraction.
             "relationships": all_relationships
         }
 
-    def _parse_extraction_response(self, response_text: str) -> Dict[str, Any]:
+    def _parse_extraction_response(self, response_text: str) -> Optional[Dict[str, Any]]:
         """
-        Parse the JSON response from Gemini.
-
-        Args:
-            response_text: Raw response text from Gemini
-
-        Returns:
-            Parsed dictionary with entities and relationships
+        Parse the JSON reply. Markdown fences are stripped first; a reply that is not
+        strict JSON is repaired with ``json_repair`` (trailing commas, unquoted keys,
+        truncated endings). Returns None when no object can be recovered.
         """
+        json_str = response_text
+        if "```json" in json_str:
+            json_str = json_str.split("```json")[1].split("```")[0]
+        elif "```" in json_str:
+            json_str = json_str.split("```")[1].split("```")[0]
+        json_str = json_str.strip()
+        result = None
         try:
-            # Try to find JSON in the response
-            # Sometimes the model wraps JSON in markdown code blocks
-            json_str = response_text
-
-            # Remove markdown code blocks if present
-            if "```json" in json_str:
-                json_str = json_str.split("```json")[1].split("```")[0]
-            elif "```" in json_str:
-                json_str = json_str.split("```")[1].split("```")[0]
-
-            # Parse JSON
-            result = json.loads(json_str.strip())
-
-            # Validate structure
-            if "entities" not in result:
-                result["entities"] = []
-            if "relationships" not in result:
-                result["relationships"] = []
-
-            return result
-
+            result = json.loads(json_str)
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON response: {e}")
-            logger.debug(f"Response text: {response_text[:500]}...")
-
-            # Fallback: try to extract entities with simpler parsing
-            return self._fallback_parse(response_text)
+            logger.warning(f"Reply is not strict JSON ({e}); attempting repair")
+            try:
+                from json_repair import loads as repair_loads
+                result = repair_loads(json_str)
+            except Exception as repair_error:  # json_repair missing or hopeless input
+                logger.error(f"JSON repair failed: {repair_error}")
+                logger.debug(f"Response text: {response_text[:500]}...")
+                return None
+        if not isinstance(result, dict):
+            return None
+        if not isinstance(result.get("entities"), list):
+            result["entities"] = []
+        if not isinstance(result.get("relationships"), list):
+            result["relationships"] = []
+        return result
 
     def _fallback_parse(self, response_text: str) -> Dict[str, Any]:
         """
