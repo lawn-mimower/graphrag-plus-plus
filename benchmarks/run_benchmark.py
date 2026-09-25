@@ -110,6 +110,7 @@ class Run:
             ollama_max_predict=args.max_predict,
             ledger_path=self.work / "live_calls.tsv",
             gemini_attempts=args.gemini_attempts,
+            ollama_think=args.ollama_think,
         )
         self.index_spec = ModelSpec.parse(args.index_model)
         self.plan_spec = ModelSpec.parse(args.plan_model)
@@ -977,6 +978,7 @@ def parse_args(argv=None):
     p.add_argument("--chunk-overlap", type=int, default=20)
     p.add_argument("--max-live-calls", type=int, default=None, help="stop after this many uncached LLM calls")
     p.add_argument("--min-interval", type=float, default=0.0, help="seconds between live calls (pacing)")
+    p.add_argument("--ollama-think", choices=["low", "medium", "high"], help="reasoning effort for gpt-oss models on Ollama")
     p.add_argument("--gemini-attempts", type=int, default=2, help="tries per Gemini call on HTTP 503")
     p.add_argument("--ollama-url", default="http://localhost:11434")
     p.add_argument("--num-ctx", type=int, default=32768)

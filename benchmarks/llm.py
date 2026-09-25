@@ -93,6 +93,7 @@ class LLMBackend:
     min_interval_s: float = 0.0
     ollama_url: str = "http://localhost:11434"
     ollama_num_ctx: int = 32768
+    ollama_think: str | None = None  # gpt-oss reasoning effort: low, medium or high
     ollama_max_predict: int = 8192
     ledger_path: Optional[Path] = None
     gemini_attempts: int = 2  # tries per call when Gemini answers 503 (each try counts as a live call)
@@ -163,6 +164,8 @@ class LLMBackend:
         if spec.provider == "ollama":
             payload["num_ctx"] = self.ollama_num_ctx
             payload["max_predict"] = self.ollama_max_predict
+            if self.ollama_think:
+                payload["think"] = self.ollama_think
         return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
     def _cache_path(self, spec, key) -> Path:
@@ -247,6 +250,7 @@ class LLMBackend:
         body = {
             "model": spec.model,
             "messages": [{"role": "user", "content": text}],
+            **({"think": self.ollama_think} if self.ollama_think else {}),
             "stream": False,
             "keep_alive": "30m",
             "options": {"temperature": 0.0 if temperature is None else temperature,
