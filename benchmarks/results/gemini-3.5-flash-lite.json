@@ -1,9 +1,9 @@
 {
   "run_name": "gemini-3.5-flash-lite",
-  "status": "subset",
+  "status": "complete",
   "message": null,
   "updated": "2026-09-25",
-  "resume_command": "python benchmarks/run_benchmark.py --run-name gemini-3.5-flash-lite --tasks er,qa --index-model gemini:gemini-3.5-flash-lite --plan-model gemini:gemini-3.5-flash-lite --answer-model gemini:gemini-3.5-flash-lite --max-live-calls 40 --min-interval 10 --gemini-attempts 1 --resume",
+  "resume_command": null,
   "conditions": {
     "index_model": "gemini:gemini-3.5-flash-lite",
     "plan_model": "gemini:gemini-3.5-flash-lite",
@@ -15,7 +15,7 @@
     "pipeline_temperatures": "0.1 for extraction, LLM dedup and query planning (set in src/)",
     "ollama": null,
     "gemini_min_interval_s": 10.0,
-    "max_live_calls": 9,
+    "max_live_calls": 120,
     "systems": [
       "graphrag",
       "rag",
@@ -309,8 +309,8 @@
     }
   },
   "qa": {
-    "questions_planned": 8,
-    "questions_scored": 8,
+    "questions_planned": 39,
+    "questions_scored": 39,
     "question_ids": [
       "Q01",
       "Q09",
@@ -319,179 +319,210 @@
       "Q27",
       "Q34",
       "Q02",
-      "Q10"
+      "Q10",
+      "Q16",
+      "Q20",
+      "Q28",
+      "Q35",
+      "Q03",
+      "Q11",
+      "Q17",
+      "Q21",
+      "Q29",
+      "Q36",
+      "Q04",
+      "Q12",
+      "Q18",
+      "Q22",
+      "Q30",
+      "Q37",
+      "Q05",
+      "Q13",
+      "Q23",
+      "Q31",
+      "Q38",
+      "Q06",
+      "Q14",
+      "Q24",
+      "Q32",
+      "Q39",
+      "Q07",
+      "Q25",
+      "Q33",
+      "Q08",
+      "Q26"
     ],
     "systems": {
       "graphrag:llm_full_context": {
-        "n": 8,
-        "score": 0.625,
-        "lenient_correct": 0.625,
-        "exact_match": 0.625,
-        "entity_f1": 0.8,
-        "abstained": 3,
+        "n": 39,
+        "score": 0.581,
+        "lenient_correct": 0.564,
+        "exact_match": 0.564,
+        "entity_f1": 0.641,
+        "abstained": 15,
         "by_type": {
           "attribute": {
-            "n": 2,
-            "score": 0.5
+            "n": 6,
+            "score": 0.667
           },
           "cross_doc": {
-            "n": 1,
-            "score": 1.0
+            "n": 7,
+            "score": 0.286
           },
           "list": {
-            "n": 1,
+            "n": 6,
             "score": 1.0
           },
           "lookup": {
-            "n": 2,
-            "score": 0.5
+            "n": 8,
+            "score": 0.625
           },
           "multi_hop": {
-            "n": 1,
-            "score": 1.0
+            "n": 8,
+            "score": 0.458
           },
           "yes_no": {
-            "n": 1,
-            "score": 0.0
+            "n": 4,
+            "score": 0.5
           }
         },
         "by_min_documents": {
           "1": {
-            "n": 7,
-            "score": 0.571
+            "n": 27,
+            "score": 0.667
           },
           "2": {
-            "n": 1,
-            "score": 1.0
+            "n": 11,
+            "score": 0.333
           }
         },
-        "answer_in_context": 0.857,
-        "evidence_recall": 0.875,
-        "mean_context_chars": 3059,
-        "llm_calls": 15,
-        "mean_input_tokens": 2163,
-        "mean_output_tokens": 92,
-        "mean_latency_s": 23.9,
-        "median_latency_s": 24.8,
+        "answer_in_context": 0.8,
+        "evidence_recall": 0.87,
+        "mean_context_chars": 2989,
+        "llm_calls": 76,
+        "mean_input_tokens": 2161,
+        "mean_output_tokens": 96,
+        "mean_latency_s": 21.6,
+        "median_latency_s": 20.2,
         "graph": {
           "status": {
-            "success": 8
+            "success": 39
           },
-          "laser_plans": 3,
-          "answer_entities_in_subgraph": 1.0,
-          "path_hit": 0.857,
-          "evidence_recall": 0.875,
+          "laser_plans": 16,
+          "answer_entities_in_subgraph": 0.846,
+          "path_hit": 0.811,
+          "evidence_recall": 0.87,
           "mean_nodes": 15,
-          "answer_calls_skipped": 1
+          "answer_calls_skipped": 2
         }
       },
       "rag": {
-        "n": 8,
-        "score": 0.75,
-        "lenient_correct": 0.75,
-        "exact_match": 0.75,
-        "entity_f1": 0.6,
-        "abstained": 1,
+        "n": 39,
+        "score": 0.658,
+        "lenient_correct": 0.667,
+        "exact_match": 0.641,
+        "entity_f1": 0.603,
+        "abstained": 11,
         "by_type": {
           "attribute": {
-            "n": 2,
-            "score": 1.0
+            "n": 6,
+            "score": 0.833
           },
           "cross_doc": {
-            "n": 1,
-            "score": 0.0
+            "n": 7,
+            "score": 0.571
           },
           "list": {
-            "n": 1,
+            "n": 6,
             "score": 1.0
           },
           "lookup": {
-            "n": 2,
-            "score": 1.0
+            "n": 8,
+            "score": 0.875
           },
           "multi_hop": {
-            "n": 1,
-            "score": 0.0
+            "n": 8,
+            "score": 0.083
           },
           "yes_no": {
-            "n": 1,
-            "score": 1.0
+            "n": 4,
+            "score": 0.75
           }
         },
         "by_min_documents": {
           "1": {
-            "n": 7,
-            "score": 0.857
+            "n": 27,
+            "score": 0.802
           },
           "2": {
-            "n": 1,
-            "score": 0.0
+            "n": 11,
+            "score": 0.364
           }
         },
-        "answer_in_context": 1.0,
-        "evidence_recall": 1.0,
-        "mean_context_chars": 3267,
-        "llm_calls": 8,
-        "mean_input_tokens": 977,
-        "mean_output_tokens": 6,
-        "mean_latency_s": 13.7,
-        "median_latency_s": 15.5,
+        "answer_in_context": 0.914,
+        "evidence_recall": 0.981,
+        "mean_context_chars": 3058,
+        "llm_calls": 39,
+        "mean_input_tokens": 926,
+        "mean_output_tokens": 5,
+        "mean_latency_s": 12.9,
+        "median_latency_s": 10.2,
         "bm25_same_k": {
           "answer_in_context": 1.0,
           "evidence_recall": 1.0
         }
       },
       "full_context": {
-        "n": 8,
-        "score": 1.0,
-        "lenient_correct": 1.0,
-        "exact_match": 1.0,
-        "entity_f1": 1.0,
-        "abstained": 0,
+        "n": 39,
+        "score": 0.846,
+        "lenient_correct": 0.846,
+        "exact_match": 0.846,
+        "entity_f1": 0.769,
+        "abstained": 6,
         "by_type": {
           "attribute": {
-            "n": 2,
+            "n": 6,
             "score": 1.0
           },
           "cross_doc": {
-            "n": 1,
-            "score": 1.0
+            "n": 7,
+            "score": 0.857
           },
           "list": {
-            "n": 1,
+            "n": 6,
             "score": 1.0
           },
           "lookup": {
-            "n": 2,
+            "n": 8,
             "score": 1.0
           },
           "multi_hop": {
-            "n": 1,
-            "score": 1.0
+            "n": 8,
+            "score": 0.375
           },
           "yes_no": {
-            "n": 1,
+            "n": 4,
             "score": 1.0
           }
         },
         "by_min_documents": {
           "1": {
-            "n": 7,
-            "score": 1.0
+            "n": 27,
+            "score": 0.963
           },
           "2": {
-            "n": 1,
-            "score": 1.0
+            "n": 11,
+            "score": 0.545
           }
         },
         "answer_in_context": 1.0,
         "evidence_recall": 1.0,
         "mean_context_chars": 8339,
-        "llm_calls": 8,
-        "mean_input_tokens": 2377,
+        "llm_calls": 39,
+        "mean_input_tokens": 2379,
         "mean_output_tokens": 6,
-        "mean_latency_s": 12.8,
-        "median_latency_s": 12.7
+        "mean_latency_s": 11.0,
+        "median_latency_s": 10.2
       }
     },
     "per_question": [
@@ -622,6 +653,502 @@
           "answer": "62%",
           "score": 1.0
         }
+      },
+      {
+        "id": "Q16",
+        "type": "yes_no",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "No",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "No",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q20",
+        "type": "multi_hop",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Sen & Varma LLP; Kestrel Alloys",
+          "score": 0.667
+        },
+        "full_context": {
+          "answer": "Sen & Varma LLP",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q28",
+        "type": "cross_doc",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Rohan Pillai",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Rohan Pillai",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q35",
+        "type": "list",
+        "graphrag:llm_full_context": {
+          "answer": "Harbourline Logistics Pvt Ltd; Larkspur Foundry Services Pvt Ltd",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Harbourline Logistics Private Limited; Larkspur Foundry Services Private Limited",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Harbourline Logistics Private Limited; Larkspur Foundry Services Private Limited",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q03",
+        "type": "lookup",
+        "graphrag:llm_full_context": {
+          "answer": "Patel Rao & Associates",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Patel Rao & Associates",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Patel Rao & Associates",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q11",
+        "type": "attribute",
+        "graphrag:llm_full_context": {
+          "answer": "12600000",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "12600000",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "12600000",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q17",
+        "type": "yes_no",
+        "graphrag:llm_full_context": {
+          "answer": "No",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Yes",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "No",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q21",
+        "type": "multi_hop",
+        "graphrag:llm_full_context": {
+          "answer": "Kestrel Alloys LLP",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "Kestrel Alloys LLP",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q29",
+        "type": "cross_doc",
+        "graphrag:llm_full_context": {
+          "answer": "Arjun Mehta",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Arjun K. Mehta",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        }
+      },
+      {
+        "id": "Q36",
+        "type": "list",
+        "graphrag:llm_full_context": {
+          "answer": "Arjun Mehta; Kavita Bose",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Arjun K. Mehta; Kavita Bose",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Arjun K. Mehta; Kavita Bose",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q04",
+        "type": "lookup",
+        "graphrag:llm_full_context": {
+          "answer": "Tern Capital Pvt Ltd",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Tern Capital Private Limited",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Tern Capital Private Limited",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q12",
+        "type": "attribute",
+        "graphrag:llm_full_context": {
+          "answer": "40000000",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "40000000",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "40000000",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q18",
+        "type": "yes_no",
+        "graphrag:llm_full_context": {
+          "answer": "Yes",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Yes",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Yes",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q22",
+        "type": "multi_hop",
+        "graphrag:llm_full_context": {
+          "answer": "Tern Capital Pvt Ltd; Larkspur Castings Pvt. Ltd.",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        }
+      },
+      {
+        "id": "Q30",
+        "type": "cross_doc",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "Arun Mehta",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q37",
+        "type": "list",
+        "graphrag:llm_full_context": {
+          "answer": "Larkspur Castings Pvt. Ltd.; Larkspur Foundry Services Pvt Ltd",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Larkspur Castings Private Limited; Larkspur Foundry Services Private Limited",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Larkspur Castings Private Limited; Larkspur Foundry Services Private Limited",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q05",
+        "type": "lookup",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Ms. Meera Iyer",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Ms. Meera Iyer",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q13",
+        "type": "attribute",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "9600000",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q23",
+        "type": "multi_hop",
+        "graphrag:llm_full_context": {
+          "answer": "Larkspur Castings Pvt. Ltd.",
+          "score": 0.667
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        }
+      },
+      {
+        "id": "Q31",
+        "type": "cross_doc",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "07410101",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "07410101",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q38",
+        "type": "list",
+        "graphrag:llm_full_context": {
+          "answer": "Arjun Mehta; Tomas Fernandes",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Arjun Mehta; Tomas Fernandes",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Arjun Mehta; Tomas Fernandes",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q06",
+        "type": "lookup",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "Mr. Arun Mehta",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q14",
+        "type": "attribute",
+        "graphrag:llm_full_context": {
+          "answer": "1,850,000",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "1,850,000",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "1850000",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q24",
+        "type": "multi_hop",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        }
+      },
+      {
+        "id": "Q32",
+        "type": "cross_doc",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "1500000",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "1500000",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q39",
+        "type": "list",
+        "graphrag:llm_full_context": {
+          "answer": "L. Narayan; Mr Vikram Sethi",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Ms L. Narayan; Mr Vikram Sethi",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Ms L. Narayan; Mr Vikram Sethi",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q07",
+        "type": "lookup",
+        "graphrag:llm_full_context": {
+          "answer": "Seabright Cooperative Bank Limited",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Seabright Co-operative Bank Ltd",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Seabright Co-operative Bank Limited",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q25",
+        "type": "multi_hop",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        }
+      },
+      {
+        "id": "Q33",
+        "type": "cross_doc",
+        "graphrag:llm_full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "2,100,000",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q08",
+        "type": "lookup",
+        "graphrag:llm_full_context": {
+          "answer": "Rohan K. Pillai",
+          "score": 1.0
+        },
+        "rag": {
+          "answer": "Rohan K. Pillai",
+          "score": 1.0
+        },
+        "full_context": {
+          "answer": "Rohan K. Pillai",
+          "score": 1.0
+        }
+      },
+      {
+        "id": "Q26",
+        "type": "multi_hop",
+        "graphrag:llm_full_context": {
+          "answer": "Kestrel Alloys LLP",
+          "score": 0.0
+        },
+        "rag": {
+          "answer": "Not found",
+          "score": 0.0
+        },
+        "full_context": {
+          "answer": "Not found",
+          "score": 0.0
+        }
       }
     ]
   },
@@ -700,8 +1227,8 @@
       "chunk_overlap": 20,
       "top_k": 5,
       "embedding_model": "sentence-transformers/all-mpnet-base-v2",
-      "embed_seconds": 12.2,
-      "model_load_seconds": 0.2
+      "embed_seconds": 0.2,
+      "model_load_seconds": 0.1
     },
     "full_context": {
       "llm_calls": 0,
@@ -711,8 +1238,8 @@
   },
   "live_api_calls": {
     "gemini:gemini-3.5-flash-lite": {
-      "ok": 41,
-      "server-error 503": 1
+      "ok": 164,
+      "server-error 503": 5
     }
   }
 }
