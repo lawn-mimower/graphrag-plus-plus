@@ -14,7 +14,7 @@ Gemini extraction: text + image per page, interleaved          → outputs/entit
    ▼
 Mention graph (NetworkX): one node per mention                → outputs/knowledge_graphs/non_dedup_kg.gpickle
    ▼
-Five dedup methods, side by side                              → dedup_<method>_kg.gpickle, benchmark_report_*.json
+Six dedup methods, side by side                               → dedup_<method>_kg.gpickle, benchmark_report_*.json
    R-Swoosh · Splink · topological · semantic · LLM full-context
    ▼  (pick one graph)
 kg_to_sql.py → SQLite: documents, entities, relationships, per-document occurrences with page numbers
@@ -38,6 +38,7 @@ QueryOrchestrator: vector search → Gemini query plan → access filter → SQL
 | Topological | Same type only; 0.7 × Jaccard similarity of neighbours + 0.3 × name-token overlap | 0.7 |
 | Semantic | `all-mpnet-base-v2` embeddings of each entity's attributes in Milvus Lite | cosine 0.9 |
 | LLM full-context | The whole graph goes into one prompt (`gemini-2.5-pro` by default). The model returns merge groups with its reasoning, which is saved to `outputs/reasoning/`. | — |
+| Fuzzy | Same type only; normalised names (case, punctuation, honorifics, legal suffixes) compared with rapidfuzz `token_sort_ratio`. No model | 90 |
 
 **Querying.** Milvus first retrieves candidate entities. Gemini then plans the query in one of two modes:
 
@@ -74,7 +75,7 @@ pip install -r requirements.txt
 cp .env.example .env                                  # set GOOGLE_API_KEY
 
 mkdir -p dataset && cp tests/fixtures/acme_* dataset/ # or your own documents
-python main.py --dataset dataset/                     # parse → extract → mention graph → 5 dedup methods
+python main.py --dataset dataset/                     # parse → extract → mention graph → 6 dedup methods
 python kg_to_sql.py --graph outputs/knowledge_graphs/dedup_llm_full_context_kg.gpickle   # → knowledge_graph.db
 python init_and_ingest.py                             # entity vectors → outputs/milvus_orchestrator.db
 python scripts/run_leiden.py                          # add --skip-summaries to avoid API calls
@@ -127,22 +128,64 @@ The offline suite replaces the Gemini client and the embedding model with determ
 
 The live test parses the fixture PDF, extracts with Gemini, runs R-Swoosh, SQL, Milvus and Leiden, and answers a path question. It passes with `GEMINI_MODEL_HEAVY=gemini-2.5-flash-lite`.
 
-## Observations on the synthetic fixtures
+## Benchmark
 
-These come from one run of the Quick start above on the four fixtures, with `GEMINI_MODEL_HEAVY` and `GEMINI_MODEL_DEDUP` set to `gemini-2.5-flash-lite`. Extraction produced 17 mentions. The output varies between runs, so treat this as an illustration, not a benchmark.
+`benchmarks/` measures two things on a synthetic corpus with exact ground truth: 8 documents
+for a fictional group of companies (annual reports, board minutes, a related-party schedule,
+a shareholding register, a sanction letter, an engagement letter) in which the same people and
+companies appear under different names, plus 39 questions of six types. Full tables, run
+conditions and caveats are in [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md).
 
-| Method | Result |
-|---|---|
-| LLM full-context | 4 merge groups, all correct: the three spellings of Acme, Beta Supplies across the Company and Organization types, Director A, Director B. It left one of the five Director A mentions unmerged. |
-| Semantic | Merged the Acme spellings and Beta Supplies, but also merged Director A with Director B: the near-identical names embed almost identically. |
-| R-Swoosh | Kept the two directors apart, but only because their extracted roles differed. On name alone, "Director A" and "Director B" score 0.90, above the 0.85 threshold. It missed "Acme Widgets Private Limited", two Director A mentions with other roles, and the Beta mention typed as Organization. |
-| Topological | No merges. Every mention is its own node, so mentions from different documents share no neighbours. |
-| Splink | No merges on a graph this small. |
+**Entity resolution**, pairwise F1 against the true clusters (`gemini-3.5-flash-lite` for the
+LLM method; the others need no model):
 
-The laser query above returned `Director A -[DESIGNATED_PARTNER_OF]-> Beta Supplies LLP`, with page citations.
+| Method | Clean mentions | Extracted mentions |
+|---|---|---|
+| LLM full-context | **0.90** | 0.72 |
+| Fuzzy (normalised names, `token_sort_ratio` ≥ 90) | 0.86 | **0.88** |
+| Exact match after normalisation | 0.83 | 0.82 |
+| R-Swoosh | 0.80 | 0.81 |
+| Semantic (Milvus embeddings) | 0.62 | 0.49 |
+| Splink, Topological | 0.00 | 0.03 |
+
+The LLM resolver is the best on clean input, but a fuzzy string match is close behind and
+beats it on the extractor's real output. With a small local model (`gpt-oss:20b`) the LLM
+resolver's precision drops to 0.65 and its merges make answers worse; the fuzzy method is
+then the better default.
+
+**Question answering**, GraphRAG++'s cited-subgraph retrieval against a basic RAG pipeline
+(chunks + dense retrieval) and against pasting every document into one prompt, each with
+the same answering model. Score is exact match, or entity-set F1 for list answers:
+
+| Model | GraphRAG++ | Basic RAG | Full-text paste |
+|---|---|---|---|
+| `gemini-3.5-flash-lite` | 0.58 | 0.66 | **0.85** |
+| `gpt-oss:20b`, best configuration | 0.71 | 0.72 | **0.88** |
+
+On a corpus that fits in one prompt, the single full-text call wins on every question type
+but one. GraphRAG++ leads on **multi-hop questions** (0.46–0.67 depending on the graph, vs
+0.08–0.25 for basic RAG), where path queries between two entities are what the graph is
+for, and it costs about twice the calls and three times the input tokens per question.
+
+The first runs exposed three failure modes that are now fixed and covered by tests:
+extraction replies that were not strict JSON or were empty were silently treated as "no
+entities" (now repaired, retried, and recorded in `failed_documents`); the planner abstained
+when the graph had nothing (now falls back to BM25 passages over the parsed documents,
+`status: text_fallback`); and the single-call LLM dedup exceeded a small model's output
+budget (now batched by entity type with reconciliation passes).
+
+```bash
+python benchmarks/run_benchmark.py --run-name local --tasks er,qa \
+    --index-model ollama:gpt-oss-20b --plan-model ollama:gpt-oss-20b --answer-model ollama:gpt-oss-20b \
+    --graphrag-graphs llm_full_context,rswoosh,fuzzy --num-ctx 16384 --ollama-think low
+python benchmarks/run_benchmark.py --report benchmarks/results/*.json     # print the tables
+```
 
 ## Status and limitations
 
+- On the benchmark corpus GraphRAG++ trails a full-text paste by a wide margin and only leads on multi-hop questions. The approach is expected to matter on corpora too large for one prompt and on relationship questions across many documents; that regime is not tested here.
+- Resolution quality depends on the model. The LLM dedup method over-merges with a small local model, and merged graphs then answer worse than the unmerged one. Choose the dedup graph per model; `fuzzy` or `rswoosh` are safer defaults for small models.
+- When the graph has no answer the orchestrator returns passages from the parsed documents (`status: text_fallback`) rather than abstaining. It cannot detect a *wrong* subgraph, only an empty one.
 - This is a proof of concept. The pipeline stops at retrieval: it returns a subgraph and citations, not a written answer. `InferenceStage.pdf` is a draft design for a fuller answer stage (several sampled answers plus an adjudicator, with caching and disambiguation). That stage is not implemented here.
 - Communities and their summaries are stored but the query orchestrator does not use them yet. On small graphs, the summaries can guess at an organisational role the documents do not state.
 - API errors are logged and the run carries on. With an exhausted quota, `main.py` still printed "Benchmark completed successfully" over an empty graph. With the default `gemini-2.5-pro` on a free-tier key, the LLM method reports zero merges. Check `outputs/benchmark.log`.
@@ -155,15 +198,15 @@ The laser query above returned `Director A -[DESIGNATED_PARTNER_OF]-> Beta Suppl
 ## Repository layout
 
 ```
-main.py                   pipeline entry: parse → extract → mention graph → five dedup methods
+main.py                   pipeline entry: parse → extract → mention graph → six dedup methods
 kg_to_sql.py              chosen graph → SQLite
 init_and_ingest.py        SQLite entities → Milvus Lite (init_and_ingest.sh does the same with the sqlite3 CLI)
 scripts/run_leiden.py     communities and summaries
 src/rapidocr_parser.py    PDF, image, DOCX and XLSX parsing
 src/entity_extractor.py   Gemini extraction; src/token_manager.py splits large documents into chunks
 src/kg_builder.py         mention graph and merged graphs
-src/methodologies/        the five dedup methods
-src/orchestrator.py       query planning; src/inference_engine.py access-filtered SQL graph walk;
+src/methodologies/        the six dedup methods (fuzzy.py is the string-matching one)
+src/orchestrator.py       query planning with a BM25 passage fallback (src/text_fallback.py); src/inference_engine.py access-filtered SQL graph walk;
                           src/milvus_ingestion.py entity vectors
 src/graph_metrics.py, src/leiden_builder.py, src/community_summarizer.py   communities
 src/benchmark_harness.py  runs the pipeline for main.py
@@ -171,6 +214,7 @@ sql/                      schema.sql, leiden_schema.sql
 benchmark_deduplication.py, inspect_llm_reasoning.py, debug_milvus.py, load_minigraph.py   helper scripts
 InferenceStage.pdf        draft design for an answer-generation stage
 tests/                    offline and live tests; fixtures/ holds the synthetic documents and make_fixtures.py
+benchmarks/               synthetic corpus, ground truth, harness, results and RESULTS.md
 ```
 
 Licence: MIT — see LICENSE.
